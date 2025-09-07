@@ -15,10 +15,10 @@
   - [x] リアルタイム保存の状態管理
 
 ### 環境構築
-- [ ] DevContainer環境の構築
-  - [ ] Dockerfileの作成（.NET開発用）
-  - [ ] devcontainer.jsonの設定
-  - [ ] 開発環境のセットアップ確認
+- [x] DevContainer環境の構築
+  - [x] Dockerfileの作成（.NET開発用）
+  - [x] devcontainer.jsonの設定
+  - [x] 開発環境のセットアップ確認
 
 ### プロジェクト初期化
 - [ ] Blazor WebAssemblyプロジェクトの作成

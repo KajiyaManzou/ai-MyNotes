@@ -1,0 +1,34 @@
+⏺ CursorでdevContainerを使ってリモート接続している状態でClaude Codeを使うには、以下の方法があります：
+
+  1. devContainer内でClaude Codeをインストール
+
+  devContainer内のターミナルで：
+  npm install -g @anthropic-ai/claude-code
+
+  2. 認証設定
+
+  devContainer内で：
+  claude auth login
+
+  3. devContainer設定ファイルに追加
+
+  .devcontainer/devcontainer.jsonに以下を追加：
+
+  {
+    "postCreateCommand": "npm install -g @anthropic-ai/claude-code",
+    "customizations": {
+      "vscode": {
+        "extensions": ["anthropic.claude-code"]
+      }
+    }
+  }
+
+  4. 使用方法
+
+  devContainer内のターミナルで：
+  claude
+
+  もしくはCursorのコマンドパレット（Cmd+Shift+P）で「Claude Code」を検索して使用できます。
+
+  devContainer環境では、ローカルファイルシステムへのアクセスが制限される場合があるので、作業ディレクトリ
+  がマウントされていることを確認してください。
