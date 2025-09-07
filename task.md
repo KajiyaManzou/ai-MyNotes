@@ -27,10 +27,10 @@
   - [x] フォルダ構造の作成（Components, Services, Models, Pages）
 
 ### 依存関係とライブラリ
-- [ ] Bootstrap 5.3の導入・設定
-  - [ ] CDN経由でのBootstrap読み込み設定
-  - [ ] カスタムCSSの基本設定
-  - [ ] Bootstrapコンポーネント動作確認
+- [x] Bootstrap 5.3の導入・設定
+  - [x] CDN経由でのBootstrap読み込み設定
+  - [x] カスタムCSSの基本設定
+  - [x] Bootstrapコンポーネント動作確認
 - [ ] IndexedDB接続ライブラリの導入
   - [ ] 適切なNuGetパッケージの調査・選定
   - [ ] ライブラリのインストール・設定

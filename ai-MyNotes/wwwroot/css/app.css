@@ -101,3 +101,44 @@ a, .btn-link {
 code {
     color: #c02d76;
 }
+
+/* Custom Bootstrap Theme */
+:root {
+    --bs-primary: #1b6ec2;
+    --bs-secondary: #6c757d;
+    --bs-success: #26b050;
+    --bs-info: #17a2b8;
+    --bs-warning: #ffc107;
+    --bs-danger: #dc3545;
+    --bs-light: #f8f9fa;
+    --bs-dark: #343a40;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* Touch-friendly interactive elements */
+.btn, .form-control, .form-select {
+    min-height: 44px;
+}
+
+/* Custom card styles for memo list */
+.memo-card {
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+}
+
+.memo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
