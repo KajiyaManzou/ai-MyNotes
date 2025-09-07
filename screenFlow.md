@@ -50,7 +50,8 @@ stateDiagram-v2
     state MemoEdit_New {
         [*] --> EmptyTextArea : 空のテキストエリア表示
         EmptyTextArea --> Typing : ユーザー入力開始
-        Typing --> AutoSaving : 3秒停止 or フォーカス離脱
+        Typing --> AutoSaving : 3秒停止タイマー
+        Typing --> ImmediateSaving : フォーカス離脱（タイマーキャンセル）
         AutoSaving --> Saved : 保存完了
         Saved --> Typing : 継続入力
     }
@@ -59,7 +60,8 @@ stateDiagram-v2
         [*] --> LoadMemo : 既存メモデータ読み込み
         LoadMemo --> DisplayContent : メモ内容表示
         DisplayContent --> EditingContent : ユーザー編集
-        EditingContent --> AutoUpdating : 3秒停止 or フォーカス離脱
+        EditingContent --> AutoUpdating : 3秒停止タイマー
+        EditingContent --> ImmediateUpdating : フォーカス離脱（タイマーキャンセル）
         AutoUpdating --> Updated : 更新完了
         Updated --> EditingContent : 継続編集
     }

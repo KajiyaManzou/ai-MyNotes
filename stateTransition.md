@@ -36,7 +36,8 @@ stateDiagram-v2
         
         EditIdle --> EditFocusOut : フォーカス離脱
         EditFocusOut --> EditSaving : 即座保存
-        EditTyping --> EditFocusOut : フォーカス離脱
+        EditTyping --> EditFocusOut : フォーカス離脱（タイマーキャンセル）
+        EditDebouncing --> EditFocusOut : フォーカス離脱（タイマーキャンセル）
     }
     
     state MemoListState {
@@ -70,11 +71,12 @@ stateDiagram-v2
     [*] --> Idle : 初期状態
     
     Idle --> Typing : 文字入力開始
-    Typing --> Debouncing : 入力停止
-    Typing --> ImmediateSave : フォーカス離脱
+    Typing --> Debouncing : 入力停止（タイマー開始）
+    Typing --> ImmediateSave : フォーカス離脱（タイマーキャンセル）
     
-    Debouncing --> Typing : 3秒以内に入力再開
-    Debouncing --> AutoSave : 3秒経過
+    Debouncing --> Typing : 3秒以内に入力再開（タイマーリセット）
+    Debouncing --> AutoSave : 3秒経過（タイマー満了）
+    Debouncing --> ImmediateSave : フォーカス離脱（タイマーキャンセル）
     
     AutoSave --> Saving : 保存処理開始
     ImmediateSave --> Saving : 即座保存開始
@@ -91,9 +93,12 @@ stateDiagram-v2
     SaveFailed --> Idle : ユーザー操作待ち
     
     state Debouncing {
-        [*] --> Waiting
-        Waiting --> [*] : タイマーリセット
-        Waiting --> TimerExpired : 3秒経過
+        [*] --> WaitingWithTimer : 3秒タイマー開始
+        WaitingWithTimer --> TimerCancelled : フォーカス離脱
+        WaitingWithTimer --> TimerReset : 入力再開
+        WaitingWithTimer --> TimerExpired : 3秒経過
+        TimerCancelled --> [*] : タイマークリア
+        TimerReset --> WaitingWithTimer : タイマー再開始
         TimerExpired --> [*]
     }
     
