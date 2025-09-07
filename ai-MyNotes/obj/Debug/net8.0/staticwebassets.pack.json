@@ -1,0 +1,61 @@
+{
+  "Files": [
+    {
+      "Id": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/blazor.webassembly.js",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/obj/Debug/net8.0/compressed/3qx8fhxk06.gz",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/obj/Debug/net8.0/scopedcss/bundle/ai-MyNotes.styles.css",
+      "PackagePath": "staticwebassets/ai-MyNotes.styles.css"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/css/app.css",
+      "PackagePath": "staticwebassets/css/app.css"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/css/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/css/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/css/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icon-192.png",
+      "PackagePath": "staticwebassets/icon-192.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/sample-data/weather.json",
+      "PackagePath": "staticwebassets/sample-data/weather.json"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.ai-MyNotes.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.ai-MyNotes.props",
+      "PackagePath": "build\\ai-MyNotes.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.ai-MyNotes.props",
+      "PackagePath": "buildMultiTargeting\\ai-MyNotes.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.ai-MyNotes.props",
+      "PackagePath": "buildTransitive\\ai-MyNotes.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

@@ -21,10 +21,10 @@
   - [x] 開発環境のセットアップ確認
 
 ### プロジェクト初期化
-- [ ] Blazor WebAssemblyプロジェクトの作成
-  - [ ] プロジェクトテンプレートの作成
-  - [ ] 基本的なプロジェクト構成の整備
-  - [ ] フォルダ構造の作成（Components, Services, Models, Pages）
+- [x] Blazor WebAssemblyプロジェクトの作成
+  - [x] プロジェクトテンプレートの作成
+  - [x] 基本的なプロジェクト構成の整備
+  - [x] フォルダ構造の作成（Components, Services, Models, Pages）
 
 ### 依存関係とライブラリ
 - [ ] Bootstrap 5.3の導入・設定
