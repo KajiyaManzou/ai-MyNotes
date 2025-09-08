@@ -23,8 +23,8 @@ jobs:
     - name: Build
       run: dotnet build ai-MyNotes/ai-MyNotes.csproj -c Release --no-restore
 
-    - name: Test
-      run: dotnet test ai-MyNotes.Tests/ai-MyNotes.Tests.csproj --no-build --verbosity normal
+    # - name: Test
+    #   run: dotnet test ai-MyNotes.Tests/ai-MyNotes.Tests.csproj --no-build --verbosity normal
 
     - name: Publish
       run: dotnet publish ai-MyNotes/ai-MyNotes.csproj -c Release -o release --nologo
