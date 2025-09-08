@@ -1,3 +1,10 @@
+/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.csproj.AssemblyReference.cache
+/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.GeneratedMSBuildEditorConfig.editorconfig
+/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.AssemblyInfoInputs.cache
+/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.AssemblyInfo.cs
+/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.csproj.CoreCompileInputs.cache
+/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.MvcApplicationPartsAssemblyInfo.cache
+/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.sourcelink.json
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/ai-MyNotes.pdb
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/ai-MyNotes.wasm
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/blazor.boot.json
@@ -201,6 +208,7 @@
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Xml.XmlSerializer.wasm
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Xml.XPath.wasm
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Xml.XPath.XDocument.wasm
+/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/WindowsBase.wasm
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Drawing.wasm.gz
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/Microsoft.VisualBasic.wasm.gz
@@ -256,6 +264,7 @@
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Threading.Tasks.wasm.gz
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/Microsoft.AspNetCore.Metadata.wasm.gz
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Net.HttpListener.wasm.gz
+/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm.gz
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Runtime.Loader.wasm.gz
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Xml.ReaderWriter.wasm.gz
 /workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.IO.FileSystem.DriveInfo.wasm.gz
@@ -432,6 +441,7 @@
 /workspace/ai-MyNotes/bin/Debug/net8.0/Microsoft.JSInterop.dll
 /workspace/ai-MyNotes/bin/Debug/net8.0/Microsoft.JSInterop.WebAssembly.dll
 /workspace/ai-MyNotes/bin/Debug/net8.0/System.IO.Pipelines.dll
+/workspace/ai-MyNotes/bin/Debug/net8.0/TG.Blazor.IndexedDB.dll
 /workspace/ai-MyNotes/bin/Debug/net8.0/Microsoft.CSharp.dll
 /workspace/ai-MyNotes/bin/Debug/net8.0/Microsoft.VisualBasic.Core.dll
 /workspace/ai-MyNotes/bin/Debug/net8.0/Microsoft.VisualBasic.dll
@@ -609,13 +619,6 @@
 /workspace/ai-MyNotes/bin/Debug/net8.0/icudt_CJK.dat
 /workspace/ai-MyNotes/bin/Debug/net8.0/icudt_EFIGS.dat
 /workspace/ai-MyNotes/bin/Debug/net8.0/icudt_no_CJK.dat
-/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.csproj.AssemblyReference.cache
-/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.GeneratedMSBuildEditorConfig.editorconfig
-/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.AssemblyInfoInputs.cache
-/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.AssemblyInfo.cs
-/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.csproj.CoreCompileInputs.cache
-/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.MvcApplicationPartsAssemblyInfo.cache
-/workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.sourcelink.json
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/Microsoft.AspNetCore.Authorization.wasm
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/Microsoft.AspNetCore.Components.wasm
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/Microsoft.AspNetCore.Components.Forms.wasm
@@ -639,6 +642,7 @@
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/Microsoft.JSInterop.wasm
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/Microsoft.JSInterop.WebAssembly.wasm
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/System.IO.Pipelines.wasm
+/workspace/ai-MyNotes/obj/Debug/net8.0/webcil/TG.Blazor.IndexedDB.wasm
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/Microsoft.CSharp.wasm
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/Microsoft.VisualBasic.Core.wasm
 /workspace/ai-MyNotes/obj/Debug/net8.0/webcil/Microsoft.VisualBasic.wasm
@@ -845,6 +849,7 @@
 /workspace/ai-MyNotes/obj/Debug/net8.0/compressed/eagrtba6rg.gz
 /workspace/ai-MyNotes/obj/Debug/net8.0/compressed/9nhdjdfcd4.gz
 /workspace/ai-MyNotes/obj/Debug/net8.0/compressed/sfp8k6woob.gz
+/workspace/ai-MyNotes/obj/Debug/net8.0/compressed/awsa3170qo.gz
 /workspace/ai-MyNotes/obj/Debug/net8.0/compressed/jw91dzc72l.gz
 /workspace/ai-MyNotes/obj/Debug/net8.0/compressed/qbmyadsdj2.gz
 /workspace/ai-MyNotes/obj/Debug/net8.0/compressed/186q4kafei.gz
@@ -1030,8 +1035,3 @@
 /workspace/ai-MyNotes/obj/Debug/net8.0/refint/ai-MyNotes.dll
 /workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.pdb
 /workspace/ai-MyNotes/obj/Debug/net8.0/ref/ai-MyNotes.dll
-/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm
-/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm.gz
-/workspace/ai-MyNotes/bin/Debug/net8.0/TG.Blazor.IndexedDB.dll
-/workspace/ai-MyNotes/obj/Debug/net8.0/webcil/TG.Blazor.IndexedDB.wasm
-/workspace/ai-MyNotes/obj/Debug/net8.0/compressed/awsa3170qo.gz
