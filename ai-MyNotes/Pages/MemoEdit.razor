@@ -1,0 +1,267 @@
+@page "/"
+@page "/edit/{id:int?}"
+@using ai_MyNotes.Models
+@using ai_MyNotes.Services
+@using TG.Blazor.IndexedDB
+@inject MemoService MemoService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<PageTitle>@(IsEditMode ? $"編集: {CurrentMemo.Title}" : "新規メモ")</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- ヘッダー -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2>@(IsEditMode ? "メモ編集" : "新規メモ")</h2>
+                <div>
+                    <button class="btn btn-outline-secondary me-2" @onclick="NavigateToList">
+                        <i class="bi bi-list-ul"></i> 一覧
+                    </button>
+                    @if (IsEditMode)
+                    {
+                        <button class="btn btn-danger" @onclick="DeleteMemo" disabled="@isSaving">
+                            <i class="bi bi-trash"></i> 削除
+                        </button>
+                    }
+                </div>
+            </div>
+
+            <!-- 保存状態表示 -->
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                <div class="alert @(statusMessage.Contains("エラー") ? "alert-danger" : "alert-success") alert-dismissible fade show" role="alert">
+                    @statusMessage
+                    <button type="button" class="btn-close" @onclick="ClearStatus"></button>
+                </div>
+            }
+
+            <!-- 保存インジケーター -->
+            @if (isSaving)
+            {
+                <div class="d-flex align-items-center mb-3">
+                    <div class="spinner-border spinner-border-sm me-2" role="status">
+                        <span class="visually-hidden">保存中...</span>
+                    </div>
+                    <small class="text-muted">保存中...</small>
+                </div>
+            }
+            else if (lastSavedAt != null)
+            {
+                <div class="mb-3">
+                    <small class="text-muted">
+                        <i class="bi bi-check-circle text-success"></i> 
+                        最終保存: @lastSavedAt?.ToString("yyyy/MM/dd HH:mm:ss")
+                    </small>
+                </div>
+            }
+
+            <!-- メモ編集エリア -->
+            <div class="mb-3">
+                <label for="memoContent" class="form-label visually-hidden">メモ内容</label>
+                <textarea @bind="CurrentMemo.Content" 
+                         @bind:event="oninput"
+                         @onfocusout="OnFocusOut"
+                         class="form-control" 
+                         id="memoContent" 
+                         rows="20" 
+                         placeholder="メモを入力してください...（1行目が自動的にタイトルになります）"
+                         disabled="@isSaving"></textarea>
+            </div>
+
+            <!-- メモ情報 -->
+            @if (IsEditMode)
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <strong>作成:</strong> @CurrentMemo.CreatedAt.ToString("yyyy/MM/dd HH:mm:ss")
+                        </small>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <strong>更新:</strong> @CurrentMemo.UpdatedAt.ToString("yyyy/MM/dd HH:mm:ss")
+                        </small>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private Memo CurrentMemo = new Memo();
+    private bool IsEditMode => Id.HasValue && Id.Value > 0;
+    private bool isSaving = false;
+    private string statusMessage = "";
+    private DateTime? lastSavedAt = null;
+    private Timer? autoSaveTimer;
+    private CancellationTokenSource? cancellationTokenSource;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cancellationTokenSource = new CancellationTokenSource();
+
+        if (IsEditMode && Id.HasValue)
+        {
+            await LoadMemo(Id.Value);
+        }
+        else
+        {
+            // 新規メモの場合
+            CurrentMemo = new Memo();
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // パラメータが変更された場合（異なるIDでナビゲーションした場合）
+        if (IsEditMode && Id.HasValue)
+        {
+            await LoadMemo(Id.Value);
+        }
+    }
+
+    private async Task LoadMemo(int id)
+    {
+        try
+        {
+            var memo = await MemoService.GetMemoByIdAsync(id);
+            if (memo != null)
+            {
+                CurrentMemo = memo;
+                lastSavedAt = memo.UpdatedAt;
+            }
+            else
+            {
+                statusMessage = "エラー: メモが見つかりませんでした";
+                await Task.Delay(3000);
+                NavigateToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"エラー: {ex.Message}";
+        }
+    }
+
+    private void OnContentChanged()
+    {
+        // 自動保存タイマーをリセット
+        autoSaveTimer?.Dispose();
+        autoSaveTimer = new Timer(async _ => await AutoSave(), null, 3000, Timeout.Infinite);
+    }
+
+    private async Task OnFocusOut()
+    {
+        // フォーカス離脱時は即座に保存（タイマーをキャンセル）
+        autoSaveTimer?.Dispose();
+        await SaveMemo();
+    }
+
+    private async Task AutoSave()
+    {
+        if (!isSaving)
+        {
+            await SaveMemo();
+        }
+    }
+
+    private async Task SaveMemo()
+    {
+        if (isSaving || string.IsNullOrWhiteSpace(CurrentMemo.Content))
+            return;
+
+        isSaving = true;
+        statusMessage = "";
+
+        try
+        {
+            if (cancellationTokenSource?.Token.IsCancellationRequested == true)
+                return;
+
+            CurrentMemo.UpdateTitleFromContent();
+            CurrentMemo.Touch();
+
+            if (IsEditMode)
+            {
+                await MemoService.UpdateMemoAsync(CurrentMemo);
+                statusMessage = "メモを更新しました";
+            }
+            else
+            {
+                var savedMemo = await MemoService.CreateMemoAsync(CurrentMemo);
+                CurrentMemo = savedMemo;
+                statusMessage = "メモを作成しました";
+                
+                // 新規作成後は編集モードに移行
+                Navigation.NavigateTo($"/edit/{CurrentMemo.Id}", replace: true);
+            }
+
+            lastSavedAt = DateTime.Now;
+            
+            // ステータスメッセージを3秒後に自動クリア
+            await Task.Delay(3000);
+            if (!cancellationTokenSource?.Token.IsCancellationRequested == true)
+            {
+                statusMessage = "";
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"エラー: {ex.Message}";
+        }
+        finally
+        {
+            isSaving = false;
+            if (!cancellationTokenSource?.Token.IsCancellationRequested == true)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task DeleteMemo()
+    {
+        if (!IsEditMode || CurrentMemo.Id <= 0)
+            return;
+
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"メモ「{CurrentMemo.Title}」を削除しますか？");
+        if (!confirmed)
+            return;
+
+        try
+        {
+            await MemoService.DeleteMemoAsync(CurrentMemo.Id);
+            statusMessage = "メモを削除しました";
+            await Task.Delay(1000);
+            NavigateToList();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"エラー: {ex.Message}";
+        }
+    }
+
+    private void NavigateToList()
+    {
+        Navigation.NavigateTo("/list");
+    }
+
+    private void ClearStatus()
+    {
+        statusMessage = "";
+    }
+
+    public void Dispose()
+    {
+        autoSaveTimer?.Dispose();
+        cancellationTokenSource?.Cancel();
+        cancellationTokenSource?.Dispose();
+    }
+}

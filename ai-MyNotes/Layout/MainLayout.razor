@@ -1,16 +1,22 @@
-﻿@inherits LayoutComponentBase
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+﻿@using ai_MyNotes.Components.Navigation
+@inherits LayoutComponentBase
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<!-- ナビゲーションバー -->
+<NavBar />
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<!-- メインコンテンツ -->
+<main class="main-content">
+    @Body
+</main>
+
+<style>
+    .main-content {
+        padding-top: 20px; /* ナビバー固定分の余白 */
+        min-height: calc(100vh - 70px); /* フル画面高さからナビバー分を除く */
+    }
+    
+    /* デフォルトのサイドバーレイアウトを無効化 */
+    .page, .sidebar, .top-row {
+        display: none !important;
+    }
+</style>

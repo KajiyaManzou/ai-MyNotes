@@ -1,0 +1,232 @@
+@page "/list"
+@using ai_MyNotes.Models
+@using ai_MyNotes.Services
+@inject MemoService MemoService
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@implements IDisposable
+
+<PageTitle>メモ一覧</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <!-- ヘッダー -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>メモ一覧</h2>
+                <button class="btn btn-primary" @onclick="CreateNewMemo">
+                    <i class="bi bi-plus-circle"></i> 新規作成
+                </button>
+            </div>
+
+            <!-- ステータスメッセージ -->
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                <div class="alert @(statusMessage.Contains("エラー") ? "alert-danger" : "alert-info") alert-dismissible fade show" role="alert">
+                    @statusMessage
+                    <button type="button" class="btn-close" @onclick="ClearStatus"></button>
+                </div>
+            }
+
+            <!-- ローディング表示 -->
+            @if (isLoading)
+            {
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">読み込み中...</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <!-- メモ一覧 -->
+                @if (memos?.Any() == true)
+                {
+                    <div class="row">
+                        @foreach (var memo in memos)
+                        {
+                            <div class="col-12 col-md-6 col-lg-4 mb-3">
+                                <div class="card memo-card h-100" @onclick="() => EditMemo(memo.Id)">
+                                    <div class="card-body d-flex flex-column">
+                                        <h5 class="card-title text-truncate">@memo.Title</h5>
+                                        <p class="card-text flex-grow-1">@memo.GetPreview(120)</p>
+                                        <div class="mt-auto">
+                                            <small class="text-muted d-block">
+                                                <i class="bi bi-calendar-event"></i> 
+                                                作成: @memo.CreatedAt.ToString("MM/dd HH:mm")
+                                            </small>
+                                            @if (memo.UpdatedAt != memo.CreatedAt)
+                                            {
+                                                <small class="text-muted d-block">
+                                                    <i class="bi bi-pencil-square"></i> 
+                                                    更新: @memo.UpdatedAt.ToString("MM/dd HH:mm")
+                                                </small>
+                                            }
+                                        </div>
+                                        <!-- 削除ボタン（右上） -->
+                                        <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-2" 
+                                               @onclick="(e) => DeleteMemo(memo, e)" 
+                                               @onclick:stopPropagation="true"
+                                               title="削除">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <!-- 空の状態 -->
+                    <div class="text-center py-5">
+                        <i class="bi bi-journal-text display-1 text-muted"></i>
+                        <h4 class="mt-3 text-muted">メモがありません</h4>
+                        <p class="text-muted">新規作成ボタンを押してメモを作成しましょう</p>
+                        <button class="btn btn-primary" @onclick="CreateNewMemo">
+                            <i class="bi bi-plus-circle"></i> 最初のメモを作成
+                        </button>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+.memo-card {
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    position: relative;
+}
+
+.memo-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.memo-card .card-title {
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+.memo-card .card-text {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #6c757d;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.memo-card .btn-outline-danger {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    --bs-btn-border-width: 1px;
+}
+
+.memo-card:hover .btn-outline-danger {
+    opacity: 1;
+}
+
+.memo-card .btn-outline-danger:hover {
+    transform: scale(1.1);
+}
+</style>
+
+@code {
+    private List<Memo> memos = new List<Memo>();
+    private bool isLoading = false;
+    private string statusMessage = "";
+    private CancellationTokenSource? cancellationTokenSource;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cancellationTokenSource = new CancellationTokenSource();
+        await LoadMemos();
+    }
+
+    private async Task LoadMemos()
+    {
+        isLoading = true;
+        statusMessage = "";
+        
+        try
+        {
+            if (cancellationTokenSource?.Token.IsCancellationRequested == true)
+                return;
+
+            memos = await MemoService.GetMemosAsync();
+            
+            if (memos.Count == 0)
+            {
+                statusMessage = "";
+            }
+            else
+            {
+                statusMessage = $"{memos.Count}件のメモが見つかりました";
+                // 3秒後にメッセージをクリア
+                await Task.Delay(3000);
+                if (!cancellationTokenSource?.Token.IsCancellationRequested == true)
+                {
+                    statusMessage = "";
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"エラー: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            if (!cancellationTokenSource?.Token.IsCancellationRequested == true)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    private void CreateNewMemo()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void EditMemo(int memoId)
+    {
+        Navigation.NavigateTo($"/edit/{memoId}");
+    }
+
+    private async Task DeleteMemo(Memo memo, MouseEventArgs e)
+    {
+        var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", $"メモ「{memo.Title}」を削除しますか？");
+        if (!confirmed)
+            return;
+
+        try
+        {
+            await MemoService.DeleteMemoAsync(memo.Id);
+            statusMessage = $"メモ「{memo.Title}」を削除しました";
+            
+            // 一覧を再読み込み
+            await LoadMemos();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"エラー: {ex.Message}";
+        }
+    }
+
+    private void ClearStatus()
+    {
+        statusMessage = "";
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource?.Cancel();
+        cancellationTokenSource?.Dispose();
+    }
+}

@@ -26,12 +26,24 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[/workspace/ai-MyNotes/Components/Navigation/NavBar.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9OYXZpZ2F0aW9uL05hdkJhci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/workspace/ai-MyNotes/Pages/Counter.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [/workspace/ai-MyNotes/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/ai-MyNotes/Pages/MemoEdit.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTWVtb0VkaXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/workspace/ai-MyNotes/Pages/MemoList.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTWVtb0xpc3QucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/workspace/ai-MyNotes/Pages/Weather.razor]
