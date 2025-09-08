@@ -1,0 +1,43 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy-to-github-pages:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore ai-MyNotes/ai-MyNotes.csproj
+
+    - name: Build
+      run: dotnet build ai-MyNotes/ai-MyNotes.csproj -c Release --no-restore
+
+    - name: Test
+      run: dotnet test ai-MyNotes.Tests/ai-MyNotes.Tests.csproj --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish ai-MyNotes/ai-MyNotes.csproj -c Release -o release --nologo
+
+    - name: Change base-tag in index.html from / to ai-MyNotes
+      run: sed -i 's/<base href="\/" \/>/<base href="\/ai-MyNotes\/" \/>/g' release/wwwroot/index.html
+
+    - name: Add .nojekyll file
+      run: touch release/wwwroot/.nojekyll
+
+    - name: Commit wwwroot to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: release/wwwroot
+        force_orphan: true
