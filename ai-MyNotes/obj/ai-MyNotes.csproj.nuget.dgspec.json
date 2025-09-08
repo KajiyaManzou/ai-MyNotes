@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/workspace/ai-MyNotes/ai-MyNotes.csproj": {}
+    "/Users/hobara/dev/AI/ai-MyNotes/ai-MyNotes/ai-MyNotes.csproj": {}
   },
   "projects": {
-    "/workspace/ai-MyNotes/ai-MyNotes.csproj": {
+    "/Users/hobara/dev/AI/ai-MyNotes/ai-MyNotes/ai-MyNotes.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/workspace/ai-MyNotes/ai-MyNotes.csproj",
+        "projectUniqueName": "/Users/hobara/dev/AI/ai-MyNotes/ai-MyNotes/ai-MyNotes.csproj",
         "projectName": "ai-MyNotes",
-        "projectPath": "/workspace/ai-MyNotes/ai-MyNotes.csproj",
-        "packagesPath": "/home/devuser/.nuget/packages/",
-        "outputPath": "/workspace/ai-MyNotes/obj/",
+        "projectPath": "/Users/hobara/dev/AI/ai-MyNotes/ai-MyNotes/ai-MyNotes.csproj",
+        "packagesPath": "/Users/hobara/.nuget/packages/",
+        "outputPath": "/Users/hobara/dev/AI/ai-MyNotes/ai-MyNotes/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/home/devuser/.nuget/NuGet/NuGet.Config"
+          "/Users/hobara/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -37,7 +37,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -55,13 +56,13 @@
             "Microsoft.NET.ILLink.Tasks": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.19, )",
+              "version": "[8.0.17, )",
               "autoReferenced": true
             },
             "Microsoft.NET.Sdk.WebAssembly.Pack": {
               "suppressParent": "All",
               "target": "Package",
-              "version": "[8.0.19, )",
+              "version": "[9.0.6, )",
               "autoReferenced": true
             },
             "TG.Blazor.IndexedDB": {
@@ -82,8 +83,16 @@
           "warn": true,
           "downloadDependencies": [
             {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.17, 8.0.17]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.17, 8.0.17]"
+            },
+            {
               "name": "Microsoft.NETCore.App.Runtime.Mono.browser-wasm",
-              "version": "[8.0.19, 8.0.19]"
+              "version": "[8.0.17, 8.0.17]"
             }
           ],
           "frameworkReferences": {
@@ -91,7 +100,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.413/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       },
       "runtimes": {
