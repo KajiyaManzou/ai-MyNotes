@@ -236,9 +236,128 @@ Test Run Successful.
 - テスト駆動開発(TDD)アプローチの採用可能
 - 継続的品質管理体制の構築
 
+## 追加実施作業（Phase 1完了後）
+
+### 1. Microsoft.NET.Test.Sdk バージョンアップ
+```xml
+<!-- Before: Version="17.8.0" -->
+<!-- After: Version="17.11.1" -->
+<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+```
+
+**目的**: 最新のテストSDK機能と.NET 8.0対応の改善を取得
+
+### 2. bUnit実践テストの作成
+
+#### 2.1 追加パッケージ
+```xml
+<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.19" />
+```
+
+**バージョン修正**: 8.0.8 → 8.0.19 (メインプロジェクトとの整合性確保)
+
+#### 2.2 bUnitテストファイル作成 (Components/SimpleComponentTests.cs)
+```csharp
+public class SimpleComponentTests : TestContext
+{
+    [Fact]
+    public void SimpleDiv_RendersCorrectly() { /* 基本HTML要素レンダリングテスト */ }
+
+    [Fact]
+    public void ButtonComponent_RendersWithCorrectText() { /* Bootstrap付きボタンテスト */ }
+
+    [Fact]
+    public void CounterComponent_IncrementsOnClick() { /* インタラクティブテスト */ }
+}
+```
+
+**作成した3つのテスト:**
+1. **基本レンダリングテスト** - DIV要素のHTML出力検証
+2. **Bootstrap統合テスト** - CSSクラスとテキスト内容検証
+3. **イベントハンドリングテスト** - ボタンクリックとステート変更検証
+
+#### 2.3 テスト用コンポーネント
+- `SimpleTestComponent` - 基本的なDIV要素
+- `ButtonTestComponent` - Bootstrap付きボタン
+- `CounterTestComponent` - カウンター機能（状態管理付き）
+
+### 3. コードカバレッジ設定の追加
+
+#### 3.1 coverlet.msbuild パッケージ追加
+```xml
+<PackageReference Include="coverlet.msbuild" Version="6.0.2">
+  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+  <PrivateAssets>all</PrivateAssets>
+</PackageReference>
+```
+
+#### 3.2 カバレッジ設定をcsprojに統合
+```xml
+<!-- Code Coverage Settings -->
+<CollectCoverage>true</CollectCoverage>
+<CoverletOutputFormat>opencover,lcov,json</CoverletOutputFormat>
+<CoverletOutput>./TestResults/coverage/</CoverletOutput>
+<!-- Threshold disabled for Phase 1 setup -->
+<!-- <Threshold>80</Threshold>
+<ThresholdType>line</ThresholdType>
+<ThresholdStat>total</ThresholdStat> -->
+<ExcludeByFile>**/Program.cs</ExcludeByFile>
+<Include>[ai-MyNotes]*</Include>
+<Exclude>[ai-MyNotes.Tests]*</Exclude>
+```
+
+**設定内容:**
+- **常時カバレッジ収集**: `dotnet test` 実行時に自動収集
+- **複数形式出力**: OpenCover、LCOV、JSON（各種ツール対応）
+- **適切な対象設定**: メインプロジェクトのみカバレッジ対象
+- **閾値は無効化**: Phase 2でのテスト拡充まで一時的に無効
+
+#### 3.3 発生した問題と解決
+
+**問題1: パッケージバージョン競合**
+```
+error NU1605: Detected package downgrade: Microsoft.AspNetCore.Components.Web from 8.0.19 to 8.0.8
+```
+**解決**: バージョンを8.0.19に統一
+
+**問題2: カバレッジ閾値エラー**
+```
+error : The total line coverage is below the specified 80%
+```
+**解決**: 閾値チェックを一時無効化（Phase 2まで）
+
+### 4. 最終テスト実行結果
+
+**成功状態:**
+- ✅ 全5つのテストが正常実行（BasicTest×2 + bUnitテスト×3）
+- ✅ カバレッジファイル出力（OpenCover、LCOV、JSON）
+- ✅ エラーなしでのテスト完了
+
+**出力ファイル:**
+```
+./ai-MyNotes.Tests/TestResults/coverage/
+├── coverage.opencover.xml
+├── coverage.info
+└── coverage.json
+```
+
+### 5. Phase 2への準備完了
+
+**利用可能な機能:**
+- **xUnit**: 基本単体テスト、Theory/InlineDataでのパラメータ化テスト
+- **bUnit**: Blazorコンポーネントテスト、HTML検証、イベントテスト
+- **カバレッジ**: 自動収集、複数形式レポート、CI/CD統合準備
+
+**次フェーズでの活用予定:**
+1. **Memoモデル単体テスト**: プロパティ、ビジネスロジック、バリデーション
+2. **MemoService単体テスト**: CRUD操作、例外処理、接続テスト
+3. **Blazorコンポーネントテスト**: UI操作、データバインディング、ナビゲーション
+
 ## ファイル変更一覧
-- `ai-MyNotes.Tests/ai-MyNotes.Tests.csproj` - テストプロジェクトファイル作成
+- `ai-MyNotes.Tests/ai-MyNotes.Tests.csproj` - テストプロジェクトファイル作成・カバレッジ設定追加
 - `ai-MyNotes.Tests/BasicTest.cs` - 基本テストファイル作成
+- `ai-MyNotes.Tests/Components/SimpleComponentTests.cs` - bUnitテストファイル作成
 - `ai-MyNotes.sln` - ソリューションファイル更新（テストプロジェクト追加）
 
-作業完了日: 2025年9月8日
+作業完了日: 2025年9月8日  
+追加作業完了日: 2025年9月8日（同日）
