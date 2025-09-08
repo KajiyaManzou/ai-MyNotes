@@ -1,0 +1,48 @@
+{
+  "testDate": "2025-09-08T07:36:00.000Z",
+  "environment": "Linux DevContainer",
+  "measurements": [
+    {
+      "run": 1,
+      "serverResponseTime": 37,
+      "note": "Initial request with cold start"
+    },
+    {
+      "run": 2,
+      "serverResponseTime": 5,
+      "note": "Warmed up server response"
+    },
+    {
+      "run": 3,
+      "serverResponseTime": 4,
+      "note": "Warmed up server response"
+    },
+    {
+      "run": 4,
+      "serverResponseTime": 3,
+      "note": "Warmed up server response"
+    },
+    {
+      "run": 5,
+      "serverResponseTime": 3,
+      "note": "Warmed up server response"
+    }
+  ],
+  "averages": {
+    "serverResponseTime": 10.4,
+    "warmServerResponseTime": 3.75
+  },
+  "analysis": {
+    "serverPerformance": "EXCELLENT",
+    "coldStartTime": 37,
+    "warmResponseTime": 3.75,
+    "performanceTarget": 2000,
+    "meetsTarget": "PENDING - Browser測定が必要",
+    "notes": [
+      "サーバー応答時間は優秀 (コールド: 37ms, ウォーム: 3.75ms)",
+      "完全なBlazor WebAssembly起動にはWASMダウンロードと初期化が含まれる",
+      "実際のユーザー体験にはネットワーク遅延 + WASM起動時間が含まれる",
+      "完全なパフォーマンス評価にはブラウザベースの測定が必要"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "blazor-performance-test",
+  "version": "1.0.0",
+  "description": "Performance testing for Blazor WebAssembly application",
+  "main": "performance-test.js",
+  "scripts": {
+    "test": "node performance-test.js",
+    "performance": "node performance-test.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.0.0"
+  },
+  "keywords": [
+    "blazor",
+    "webassembly",
+    "performance",
+    "testing"
+  ],
+  "author": "",
+  "license": "MIT"
+}
