@@ -13,6 +13,7 @@
     <SourceRoot Include="/home/devuser/.nuget/packages/" />
   </ItemGroup>
   <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)tg.blazor.indexeddb/1.5.0-preview/buildTransitive/TG.Blazor.IndexedDB.props" Condition="Exists('$(NuGetPackageRoot)tg.blazor.indexeddb/1.5.0-preview/buildTransitive/TG.Blazor.IndexedDB.props')" />
     <Import Project="$(NuGetPackageRoot)microsoft.net.sdk.webassembly.pack/8.0.19/build/Microsoft.NET.Sdk.WebAssembly.Pack.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.sdk.webassembly.pack/8.0.19/build/Microsoft.NET.Sdk.WebAssembly.Pack.props')" />
     <Import Project="$(NuGetPackageRoot)microsoft.net.illink.tasks/8.0.19/build/Microsoft.NET.ILLink.Tasks.props" Condition="Exists('$(NuGetPackageRoot)microsoft.net.illink.tasks/8.0.19/build/Microsoft.NET.ILLink.Tasks.props')" />
     <Import Project="$(NuGetPackageRoot)microsoft.aspnetcore.components.webassembly/8.0.19/build/net8.0/Microsoft.AspNetCore.Components.WebAssembly.props" Condition="Exists('$(NuGetPackageRoot)microsoft.aspnetcore.components.webassembly/8.0.19/build/net8.0/Microsoft.AspNetCore.Components.WebAssembly.props')" />

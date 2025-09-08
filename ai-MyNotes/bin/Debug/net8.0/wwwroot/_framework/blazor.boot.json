@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ai-MyNotes",
   "resources": {
-    "hash": "sha256-/bqOJCi0xYfaDtQv6hVPnENun5rc7cBpour5QpVmL6Q=",
+    "hash": "sha256-BF9rL8yVHkqTQsG1vrmLaTYkgq2skL3MJaVJfiPLMAM=",
     "jsModuleNative": {
       "dotnet.native.8.0.19.cdrc1eyzer.js": "sha256-O/NCYcAN9uPocD7ns7AzF/cqx7f5vL1PTJCQs0vEXyk="
     },
@@ -40,6 +40,7 @@
       "Microsoft.JSInterop.wasm": "sha256-LlqVLNqdTRuAKQz624/I8RJxPdn8tMbs7lMpAAvZ55Q=",
       "Microsoft.JSInterop.WebAssembly.wasm": "sha256-z2nzEF6tW4KMgJUuUZtscf9IDAq/AVAOl+ZNACYVetc=",
       "System.IO.Pipelines.wasm": "sha256-JqVBy6SV+3qk+IK3VJiyIDt9CsVk6b1/ytTXmrI4mTM=",
+      "TG.Blazor.IndexedDB.wasm": "sha256-4u3DzThxux9K9sTeHhZyBhid/AlxJKAaouBiayJ/n5Y=",
       "Microsoft.CSharp.wasm": "sha256-nXsmsiS9BwFA3/0f5IwnxbH0jmoq3QCIr8k7lKr7yQg=",
       "Microsoft.VisualBasic.Core.wasm": "sha256-Bx9VgTGSjiNDkpkaXaROpXaxe0p8g2+g0iwfVimFoyc=",
       "Microsoft.VisualBasic.wasm": "sha256-agJGsygNM2YPAI5zIrm8MbLxEMrYZT9g+FI0r5i7YmE=",
@@ -208,10 +209,10 @@
       "mscorlib.wasm": "sha256-RLW/7NVuhoPfq151II3kX2kWHgBwQgpCw9aemQNg3to=",
       "netstandard.wasm": "sha256-lAg5WvTiA8wbsIwlr51xh0YWpXT9F5EX3Cnv+11O/mU=",
       "System.Private.CoreLib.wasm": "sha256-3O3muuRQwoLRecYRjfIFWUURvTjP4EmD2O8wYg2UDNY=",
-      "ai-MyNotes.wasm": "sha256-w3Ta6BYKwL8Ufh2Xotiw4vvqibkIq4lTjQrGnXvrez0="
+      "ai-MyNotes.wasm": "sha256-jNoptfjbvhVAQ2aTeuL6mwK52tfMYYwVI/l4ih6cgG0="
     },
     "pdb": {
-      "ai-MyNotes.pdb": "sha256-WQt7oN8a9Mnb1reR3PIlM/Baaq/LC7pxkA4oaHDlfA4="
+      "ai-MyNotes.pdb": "sha256-k9EIhbUVLG7IfZi88VXXpDIu4K+PnigllsXbsyXSTT0="
     }
   },
   "cacheBootResources": true,

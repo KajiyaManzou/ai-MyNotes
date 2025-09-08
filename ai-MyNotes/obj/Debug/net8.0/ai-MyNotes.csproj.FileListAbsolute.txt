@@ -1030,3 +1030,8 @@
 /workspace/ai-MyNotes/obj/Debug/net8.0/refint/ai-MyNotes.dll
 /workspace/ai-MyNotes/obj/Debug/net8.0/ai-MyNotes.pdb
 /workspace/ai-MyNotes/obj/Debug/net8.0/ref/ai-MyNotes.dll
+/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm
+/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm.gz
+/workspace/ai-MyNotes/bin/Debug/net8.0/TG.Blazor.IndexedDB.dll
+/workspace/ai-MyNotes/obj/Debug/net8.0/webcil/TG.Blazor.IndexedDB.wasm
+/workspace/ai-MyNotes/obj/Debug/net8.0/compressed/awsa3170qo.gz

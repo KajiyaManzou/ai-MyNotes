@@ -63,6 +63,10 @@
               "target": "Package",
               "version": "[8.0.19, )",
               "autoReferenced": true
+            },
+            "TG.Blazor.IndexedDB": {
+              "target": "Package",
+              "version": "[1.5.0-preview, )"
             }
           },
           "imports": [

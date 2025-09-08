@@ -1,4 +1,9 @@
 ﻿@page "/"
+@using ai_MyNotes.Models
+@using TG.Blazor.IndexedDB
+@inject IndexedDBManager DbManager
+@inject IJSRuntime JSRuntime
+@implements IDisposable
 
 <PageTitle>Bootstrap Components Test</PageTitle>
 
@@ -71,6 +76,74 @@
         </div>
     </div>
 
+    <!-- IndexedDB Test -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3>IndexedDB Test</h3>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">メモの作成・表示テスト</h5>
+                    
+                    <div class="mb-3">
+                        <label for="memoContent" class="form-label">メモ内容</label>
+                        <textarea @bind="testMemoContent" class="form-control" id="memoContent" rows="3" 
+                                placeholder="テスト用のメモ内容を入力してください"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <button @onclick="CreateTestMemo" class="btn btn-primary me-2" disabled="@isLoading">
+                            @if(isLoading)
+                            {
+                                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                            }
+                            メモを作成
+                        </button>
+                        <button @onclick="LoadAllMemos" class="btn btn-secondary me-2" disabled="@isLoading">メモ一覧を読み込み</button>
+                        <button @onclick="ClearAllMemos" class="btn btn-danger" disabled="@isLoading">全メモ削除</button>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(statusMessage))
+                    {
+                        <div class="alert @(statusMessage.Contains("エラー") ? "alert-danger" : "alert-success")" role="alert">
+                            @statusMessage
+                        </div>
+                    }
+                    
+                    @if (memos?.Any() == true)
+                    {
+                        <h6>保存されたメモ一覧:</h6>
+                        <div class="row">
+                            @foreach (var memo in memos)
+                            {
+                                <div class="col-md-6 col-lg-4 mb-2">
+                                    <div class="card memo-card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">@memo.Title</h6>
+                                            <p class="card-text">@memo.GetPreview(80)</p>
+                                            <p class="card-text">
+                                                <small class="text-muted">
+                                                    作成: @memo.CreatedAt.ToString("MM/dd HH:mm")<br/>
+                                                    更新: @memo.UpdatedAt.ToString("MM/dd HH:mm")
+                                                </small>
+                                            </p>
+                                            <button @onclick="() => DeleteMemo(memo.Id)" 
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    disabled="@isLoading">削除</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else if (memos != null)
+                    {
+                        <p class="text-muted">保存されたメモはありません</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Responsive Grid Test -->
     <div class="row mb-4">
         <div class="col-12">
@@ -87,6 +160,181 @@
         </div>
     </div>
 </div>
+
+@code {
+    private string testMemoContent = "";
+    private List<Memo> memos = new List<Memo>();
+    private string statusMessage = "";
+    private bool isLoading = false;
+    private CancellationTokenSource? cancellationTokenSource;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cancellationTokenSource = new CancellationTokenSource();
+        
+        try
+        {
+            await LoadAllMemos();
+        }
+        catch (Exception ex)
+        {
+            statusMessage = $"初期化エラー: {ex.Message}";
+        }
+    }
+
+    public void Dispose()
+    {
+        cancellationTokenSource?.Cancel();
+        cancellationTokenSource?.Dispose();
+    }
+
+    private async Task CreateTestMemo()
+    {
+        if (string.IsNullOrWhiteSpace(testMemoContent))
+        {
+            statusMessage = "エラー: メモ内容を入力してください";
+            StateHasChanged();
+            return;
+        }
+
+        isLoading = true;
+        statusMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            if (cancellationTokenSource?.Token.IsCancellationRequested == true) return;
+            
+            var memo = new Memo
+            {
+                Content = testMemoContent
+            };
+            
+            memo.UpdateTitleFromContent();
+            memo.Touch();
+
+            var record = new StoreRecord<Memo>
+            {
+                Storename = MyNotesDatabase.MemoStore,
+                Data = memo
+            };
+            await DbManager.AddRecord(record);
+            
+            statusMessage = $"メモ「{memo.Title}」を作成しました";
+            testMemoContent = "";
+            
+            // メモ一覧を再読み込み
+            await LoadAllMemos();
+        }
+        catch (Exception ex) when (!ex.GetType().Name.Contains("TaskCanceled"))
+        {
+            statusMessage = $"エラー: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            if (cancellationTokenSource?.Token.IsCancellationRequested == false)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task LoadAllMemos()
+    {
+        isLoading = true;
+        statusMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            if (cancellationTokenSource?.Token.IsCancellationRequested == true) return;
+            
+            // 更新日時降順でソートして取得
+            var allMemos = await DbManager.GetRecords<Memo>(MyNotesDatabase.MemoStore);
+            memos = allMemos?.OrderByDescending(m => m.UpdatedAt).ToList() ?? new List<Memo>();
+            
+            statusMessage = $"{memos.Count}件のメモを読み込みました";
+        }
+        catch (Exception ex) when (!ex.GetType().Name.Contains("TaskCanceled"))
+        {
+            statusMessage = $"エラー: {ex.Message}";
+            memos = new List<Memo>();
+        }
+        finally
+        {
+            isLoading = false;
+            if (cancellationTokenSource?.Token.IsCancellationRequested == false)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task DeleteMemo(int memoId)
+    {
+        isLoading = true;
+        statusMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            if (cancellationTokenSource?.Token.IsCancellationRequested == true) return;
+            
+            await DbManager.DeleteRecord(MyNotesDatabase.MemoStore, memoId);
+            statusMessage = "メモを削除しました";
+            
+            // メモ一覧を再読み込み
+            await LoadAllMemos();
+        }
+        catch (Exception ex) when (!ex.GetType().Name.Contains("TaskCanceled"))
+        {
+            statusMessage = $"エラー: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            if (cancellationTokenSource?.Token.IsCancellationRequested == false)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ClearAllMemos()
+    {
+        isLoading = true;
+        statusMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            if (cancellationTokenSource?.Token.IsCancellationRequested == true) return;
+            
+            // 個別に削除（ClearAsyncがない場合の代替）
+            var allMemos = await DbManager.GetRecords<Memo>(MyNotesDatabase.MemoStore);
+            foreach (var memo in allMemos)
+            {
+                if (cancellationTokenSource?.Token.IsCancellationRequested == true) return;
+                await DbManager.DeleteRecord(MyNotesDatabase.MemoStore, memo.Id);
+            }
+            memos = new List<Memo>();
+            statusMessage = "全てのメモを削除しました";
+        }
+        catch (Exception ex) when (!ex.GetType().Name.Contains("TaskCanceled"))
+        {
+            statusMessage = $"エラー: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            if (cancellationTokenSource?.Token.IsCancellationRequested == false)
+            {
+                StateHasChanged();
+            }
+        }
+    }
+}
 
 <!-- Modal -->
 <div class="modal fade" id="testModal" tabindex="-1" aria-labelledby="testModalLabel" aria-hidden="true">

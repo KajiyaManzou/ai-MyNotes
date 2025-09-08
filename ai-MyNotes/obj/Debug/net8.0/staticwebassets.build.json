@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "8SRThCj8JxTUvBdrQ4F/5hM3Yco5QVz15BOku49+jEA=",
+  "Hash": "znTSBTMCmgxTkgUS4/2+kLVUfXuo0GT9mg2WG7qD5VE=",
   "Source": "ai-MyNotes",
   "BasePath": "/",
   "Mode": "Root",
@@ -16,6 +16,25 @@
     }
   ],
   "Assets": [
+    {
+      "Identity": "/home/devuser/.nuget/packages/tg.blazor.indexeddb/1.5.0-preview/staticwebassets/indexedDb.Blazor.js",
+      "SourceId": "TG.Blazor.IndexedDB",
+      "SourceType": "Package",
+      "ContentRoot": "/home/devuser/.nuget/packages/tg.blazor.indexeddb/1.5.0-preview/staticwebassets/",
+      "BasePath": "_content/TG.Blazor.IndexedDB",
+      "RelativePath": "indexedDb.Blazor.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "/home/devuser/.nuget/packages/tg.blazor.indexeddb/1.5.0-preview/staticwebassets/indexedDb.Blazor.js"
+    },
     {
       "Identity": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/ai-MyNotes.pdb",
       "SourceId": "ai-MyNotes",
@@ -3874,6 +3893,25 @@
       "OriginalItemSpec": "/workspace/ai-MyNotes/obj/Debug/net8.0/webcil/System.Xml.XPath.XDocument.wasm"
     },
     {
+      "Identity": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm",
+      "SourceId": "ai-MyNotes",
+      "SourceType": "Computed",
+      "ContentRoot": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/TG.Blazor.IndexedDB.wasm",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "WasmResource",
+      "AssetTraitValue": "runtime",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/workspace/ai-MyNotes/obj/Debug/net8.0/webcil/TG.Blazor.IndexedDB.wasm"
+    },
+    {
       "Identity": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/WindowsBase.wasm",
       "SourceId": "ai-MyNotes",
       "SourceType": "Computed",
@@ -4917,6 +4955,25 @@
       "CopyToOutputDirectory": "PreserveNewest",
       "CopyToPublishDirectory": "Never",
       "OriginalItemSpec": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/System.Net.HttpListener.wasm"
+    },
+    {
+      "Identity": "/workspace/ai-MyNotes/obj/Debug/net8.0/compressed/awsa3170qo.gz",
+      "SourceId": "ai-MyNotes",
+      "SourceType": "Computed",
+      "ContentRoot": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "_framework/TG.Blazor.IndexedDB.wasm.gz",
+      "AssetKind": "Build",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "CopyToOutputDirectory": "PreserveNewest",
+      "CopyToPublishDirectory": "Never",
+      "OriginalItemSpec": "/workspace/ai-MyNotes/bin/Debug/net8.0/wwwroot/_framework/TG.Blazor.IndexedDB.wasm"
     },
     {
       "Identity": "/workspace/ai-MyNotes/obj/Debug/net8.0/compressed/b4oeqdzez2.gz",

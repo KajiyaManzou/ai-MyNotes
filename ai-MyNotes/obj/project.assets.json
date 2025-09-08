@@ -357,6 +357,25 @@
         "build": {
           "buildTransitive/net6.0/_._": {}
         }
+      },
+      "TG.Blazor.IndexedDB/1.5.0-preview": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "3.1.0",
+          "Microsoft.AspNetCore.Components.Web": "3.1.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/TG.Blazor.IndexedDB.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/TG.Blazor.IndexedDB.dll": {}
+        },
+        "build": {
+          "buildTransitive/TG.Blazor.IndexedDB.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/TG.Blazor.IndexedDB.props": {}
+        }
       }
     },
     "net8.0/browser-wasm": {
@@ -714,6 +733,25 @@
         },
         "build": {
           "buildTransitive/net6.0/_._": {}
+        }
+      },
+      "TG.Blazor.IndexedDB/1.5.0-preview": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.AspNetCore.Components": "3.1.0",
+          "Microsoft.AspNetCore.Components.Web": "3.1.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/TG.Blazor.IndexedDB.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/TG.Blazor.IndexedDB.dll": {}
+        },
+        "build": {
+          "buildTransitive/TG.Blazor.IndexedDB.props": {}
+        },
+        "buildMultiTargeting": {
+          "buildMultiTargeting/TG.Blazor.IndexedDB.props": {}
         }
       }
     }
@@ -1556,6 +1594,23 @@
         "system.io.pipelines.nuspec",
         "useSharedDesignerContext.txt"
       ]
+    },
+    "TG.Blazor.IndexedDB/1.5.0-preview": {
+      "sha512": "wvqdZZqpwOuNJ1gW3KXvEugPlT4UiAhrnhIlGnWv18lf/H9iEaMGPbEZUdy/uzejyYC3541AXsKlX2ZhoW0QUA==",
+      "type": "package",
+      "path": "tg.blazor.indexeddb/1.5.0-preview",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/Microsoft.AspNetCore.StaticWebAssets.props",
+        "build/TG.Blazor.IndexedDB.props",
+        "buildMultiTargeting/TG.Blazor.IndexedDB.props",
+        "buildTransitive/TG.Blazor.IndexedDB.props",
+        "lib/netstandard2.0/TG.Blazor.IndexedDB.dll",
+        "staticwebassets/indexedDb.Blazor.js",
+        "tg.blazor.indexeddb.1.5.0-preview.nupkg.sha512",
+        "tg.blazor.indexeddb.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
@@ -1563,7 +1618,8 @@
       "Microsoft.AspNetCore.Components.WebAssembly >= 8.0.19",
       "Microsoft.AspNetCore.Components.WebAssembly.DevServer >= 8.0.19",
       "Microsoft.NET.ILLink.Tasks >= 8.0.19",
-      "Microsoft.NET.Sdk.WebAssembly.Pack >= 8.0.19"
+      "Microsoft.NET.Sdk.WebAssembly.Pack >= 8.0.19",
+      "TG.Blazor.IndexedDB >= 1.5.0-preview"
     ]
   },
   "packageFolders": {
@@ -1628,6 +1684,10 @@
             "target": "Package",
             "version": "[8.0.19, )",
             "autoReferenced": true
+          },
+          "TG.Blazor.IndexedDB": {
+            "target": "Package",
+            "version": "[1.5.0-preview, )"
           }
         },
         "imports": [
