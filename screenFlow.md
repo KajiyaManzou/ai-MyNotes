@@ -13,14 +13,14 @@ graph TD
     ConfirmDialog["削除確認ダイアログ<br/>・メモタイトル表示<br/>・キャンセル/削除選択"]
     
     %% 基本遷移（2画面構成）
-    MemoEdit --|📝 メモ一覧ボタン| MemoList
-    MemoList --|✏️ 新規作成ボタン| MemoEdit
-    MemoList --|メモカードタップ<br/>（編集）| MemoEdit
+    MemoEdit -->|📝 メモ一覧ボタン| MemoList
+    MemoList -->|✏️ 新規作成ボタン| MemoEdit
+    MemoList -->|メモカードタップ<br/>（編集）| MemoEdit
     
     %% 左スワイプ削除フロー
-    MemoList --|左スワイプ| ConfirmDialog
-    ConfirmDialog --|キャンセル| MemoList
-    ConfirmDialog --|削除実行| MemoList
+    MemoList -->|左スワイプ| ConfirmDialog
+    ConfirmDialog -->|キャンセル| MemoList
+    ConfirmDialog -->|削除実行| MemoList
     
     %% スタイリング
     classDef primary fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
