@@ -38,25 +38,52 @@
                 </div>
             }
 
-            <!-- 保存インジケーター -->
-            @if (isSaving)
-            {
-                <div class="d-flex align-items-center mb-3">
-                    <div class="spinner-border spinner-border-sm me-2" role="status">
-                        <span class="visually-hidden">保存中...</span>
+            <!-- 保存状態インジケーター -->
+            <div class="save-status-bar mb-3">
+                @if (isSaving)
+                {
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm me-2" role="status">
+                            <span class="visually-hidden">保存中...</span>
+                        </div>
+                        <small class="text-primary fw-semibold">
+                            <i class="bi bi-cloud-upload"></i> 保存中...
+                        </small>
                     </div>
-                    <small class="text-muted">保存中...</small>
-                </div>
-            }
-            else if (lastSavedAt != null)
-            {
-                <div class="mb-3">
-                    <small class="text-muted">
-                        <i class="bi bi-check-circle text-success"></i> 
-                        最終保存: @lastSavedAt?.ToString("yyyy/MM/dd HH:mm:ss")
-                    </small>
-                </div>
-            }
+                }
+                else if (saveError)
+                {
+                    <div class="d-flex align-items-center text-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <small class="fw-semibold">保存に失敗しました</small>
+                        <button class="btn btn-outline-danger btn-sm ms-2" @onclick="RetrySave">
+                            <i class="bi bi-arrow-clockwise"></i> 再試行
+                        </button>
+                    </div>
+                }
+                else if (lastSavedAt != null)
+                {
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                        <small class="text-success">
+                            保存完了: @lastSavedAt?.ToString("MM/dd HH:mm:ss")
+                        </small>
+                        @if (hasUnsavedChanges)
+                        {
+                            <small class="text-warning ms-3">
+                                <i class="bi bi-pencil-square"></i> 編集中（@autoSaveCountdown 秒後に自動保存）
+                            </small>
+                        }
+                    </div>
+                }
+                else if (isNewMemo)
+                {
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-plus text-info me-2"></i>
+                        <small class="text-info">新規メモ作成中...</small>
+                    </div>
+                }
+            </div>
 
             <!-- メモ編集エリア（Bootstrap強化） -->
             <div class="mb-3 flex-grow-1 d-flex flex-column">
@@ -133,13 +160,19 @@
     private Memo CurrentMemo = new Memo();
     private Memo OriginalMemo = new Memo(); // 変更検知用の元データ
     private bool IsEditMode => Id.HasValue && Id.Value > 0;
+    private bool isNewMemo => !IsEditMode;
     private bool isSaving = false;
+    private bool saveError = false;
     private bool hasUnsavedChanges = false;
     private string statusMessage = "";
     private DateTime? lastSavedAt = null;
     private Timer? autoSaveTimer;
+    private Timer? countdownTimer;
     private CancellationTokenSource? cancellationTokenSource;
     private string? lastContent = ""; // 前回の内容（変更検知用）
+    private int autoSaveCountdown = 0; // 自動保存カウントダウン
+    private readonly object saveLock = new object(); // 競合処理回避用ロック
+    private bool isAutoSaveEnabled = true; // 自動保存の有効/無効
 
     protected override async Task OnInitializedAsync()
     {
@@ -215,15 +248,8 @@
             CurrentMemo.Title = tempMemo.Title;
         }
         
-        // 自動保存タイマーをリセット（3秒後に保存）
-        autoSaveTimer?.Dispose();
-        autoSaveTimer = new Timer(async _ => 
-        {
-            if (hasUnsavedChanges && !isSaving)
-            {
-                await InvokeAsync(async () => await AutoSave());
-            }
-        }, null, 3000, Timeout.Infinite);
+        // 自動保存タイマーをリセット（3秒後に保存、debounce処理）
+        ResetAutoSaveTimer();
         
         StateHasChanged();
     }
@@ -235,9 +261,12 @@
 
     private async Task OnFocusOut()
     {
-        // フォーカス離脱時は即座に保存（タイマーをキャンセル）
-        autoSaveTimer?.Dispose();
-        await SaveMemo();
+        // フォーカス離脱時は即座に保存（優先処理、タイマーをキャンセル）
+        CancelAutoSaveTimer();
+        if (hasUnsavedChanges && !isSaving)
+        {
+            await SaveMemo();
+        }
     }
 
     private async Task AutoSave()
@@ -250,10 +279,16 @@
 
     private async Task SaveMemo()
     {
-        if (isSaving || string.IsNullOrWhiteSpace(CurrentMemo.Content))
-            return;
+        // 競合処理の回避（ロック機構）
+        lock (saveLock)
+        {
+            if (isSaving || string.IsNullOrWhiteSpace(CurrentMemo.Content))
+                return;
+            
+            isSaving = true;
+        }
 
-        isSaving = true;
+        saveError = false;
         statusMessage = "";
 
         try
@@ -265,13 +300,15 @@
             var (isValid, errors) = CurrentMemo.Validate();
             if (!isValid)
             {
-                statusMessage = $"エラー: {string.Join(", ", errors)}";
+                statusMessage = $"バリデーションエラー: {string.Join(", ", errors)}";
+                saveError = true;
                 return;
             }
 
             CurrentMemo.UpdateTitleFromContent();
             CurrentMemo.Touch();
 
+            // 保存処理実行
             if (IsEditMode)
             {
                 await MemoService.UpdateMemoAsync(CurrentMemo);
@@ -292,15 +329,19 @@
             lastSavedAt = DateTime.Now;
             lastContent = CurrentMemo.Content;
             hasUnsavedChanges = false;
+            saveError = false;
             
             // 元データを更新（変更検知用）
             OriginalMemo.Content = CurrentMemo.Content;
             OriginalMemo.Title = CurrentMemo.Title;
             OriginalMemo.UpdatedAt = CurrentMemo.UpdatedAt;
             
+            // JavaScript状態の更新
+            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = false;");
+            
             StateHasChanged();
             
-            // ステータスメッセージを3秒後に自動クリア
+            // 成功フィードバックを3秒後に自動クリア
             await Task.Delay(3000);
             if (!cancellationTokenSource?.Token.IsCancellationRequested == true)
             {
@@ -308,9 +349,27 @@
                 StateHasChanged();
             }
         }
+        catch (TaskCanceledException)
+        {
+            // キャンセル処理（正常終了）
+            statusMessage = "";
+        }
         catch (Exception ex)
         {
-            statusMessage = $"保存エラー: {ex.Message}";
+            // エラーハンドリングの改善
+            saveError = true;
+            statusMessage = $"保存に失敗しました: {ex.Message}";
+            
+            // エラー詳細のログ出力
+            Console.WriteLine($"Save error: {ex}");
+            
+            // エラー時は自動保存を一時的に無効化（1分間）
+            isAutoSaveEnabled = false;
+            _ = Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromMinutes(1));
+                isAutoSaveEnabled = true;
+            });
         }
         finally
         {
@@ -439,6 +498,59 @@
             }
         }
     }
+    
+    // 自動保存タイマーのリセット（debounce処理）
+    private void ResetAutoSaveTimer()
+    {
+        if (!isAutoSaveEnabled) return;
+        
+        CancelAutoSaveTimer();
+        
+        // カウントダウンタイマーを開始
+        autoSaveCountdown = 3;
+        countdownTimer = new Timer(async _ =>
+        {
+            autoSaveCountdown--;
+            await InvokeAsync(StateHasChanged);
+            
+            if (autoSaveCountdown <= 0)
+            {
+                countdownTimer?.Dispose();
+                countdownTimer = null;
+                
+                if (hasUnsavedChanges && !isSaving)
+                {
+                    await InvokeAsync(async () => await AutoSave());
+                }
+            }
+        }, null, 1000, 1000);
+        
+        // メインの自動保存タイマー
+        autoSaveTimer = new Timer(async _ => 
+        {
+            if (hasUnsavedChanges && !isSaving)
+            {
+                await InvokeAsync(async () => await AutoSave());
+            }
+        }, null, 3000, Timeout.Infinite);
+    }
+    
+    // 自動保存タイマーのキャンセル
+    private void CancelAutoSaveTimer()
+    {
+        autoSaveTimer?.Dispose();
+        autoSaveTimer = null;
+        countdownTimer?.Dispose();
+        countdownTimer = null;
+        autoSaveCountdown = 0;
+    }
+    
+    // 再試行処理
+    private async Task RetrySave()
+    {
+        saveError = false;
+        await SaveMemo();
+    }
 
     public void Dispose()
     {
@@ -449,7 +561,7 @@
             Task.Run(async () => await ForceSaveBeforeExit());
         }
 
-        autoSaveTimer?.Dispose();
+        CancelAutoSaveTimer();
         cancellationTokenSource?.Cancel();
         cancellationTokenSource?.Dispose();
         
@@ -464,3 +576,88 @@
         }
     }
 }
+
+<style>
+/* 保存状態インジケーターのスタイル */
+.save-status-bar {
+    min-height: 2rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.save-status-bar:empty {
+    display: none;
+}
+
+/* 保存中のアニメーション */
+.save-status-bar .spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    animation: spin 1s linear infinite;
+}
+
+@@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 保存成功時のフェードイン効果 */
+.save-status-bar .text-success {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* エラー状態の強調 */
+.save-status-bar .text-danger {
+    animation: shake 0.5s ease-in-out;
+}
+
+@@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* カウントダウン表示のスタイル */
+.save-status-bar .text-warning {
+    font-weight: 500;
+}
+
+/* レスポンシブ対応 */
+@@media (max-width: 768px) {
+    .save-status-bar {
+        font-size: 0.875rem;
+    }
+    
+    .save-status-bar .btn-sm {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* テキストエリアのフォーカス時スタイル */
+.form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* 文字数カウンター */
+.character-counter {
+    transition: color 0.3s ease;
+}
+
+.character-counter.warning {
+    color: #fd7e14 !important;
+}
+
+.character-counter.danger {
+    color: #dc3545 !important;
+}
+</style>

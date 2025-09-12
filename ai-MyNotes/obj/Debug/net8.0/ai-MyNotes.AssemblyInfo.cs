@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ai-MyNotes")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+77c8a7e21bf98e4689075b2b769f576c34efe5f8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8622dca61a91449135584616e31757e4caea0445")]
 [assembly: System.Reflection.AssemblyProductAttribute("ai-MyNotes")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ai-MyNotes")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
