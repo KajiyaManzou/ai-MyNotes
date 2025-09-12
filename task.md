@@ -68,19 +68,19 @@
   - [x] **テスト実行と確認**
 
 ### データアクセス層
-- [ ] MemoServiceクラスの実装
-  - [ ] IndexedDBとの接続処理
-  - [ ] CRUD操作メソッドの実装
-    - [ ] CreateMemoAsync（新規作成）
-    - [ ] GetMemosAsync（全件取得・降順ソート）
-    - [ ] GetMemoByIdAsync（ID指定取得）
-    - [ ] UpdateMemoAsync（更新）
-    - [ ] DeleteMemoAsync（削除）
-- [ ] **単体テスト作成**: MemoServiceのテスト
-  - [ ] 各CRUD操作の正常系テスト
-  - [ ] 異常系テスト（存在しないID等）
-  - [ ] IndexedDB接続テスト
-  - [ ] **テスト実行と確認**
+- [x] MemoServiceクラスの実装
+  - [x] IndexedDBとの接続処理
+  - [x] CRUD操作メソッドの実装
+    - [x] CreateMemoAsync（新規作成）
+    - [x] GetMemosAsync（全件取得・降順ソート）
+    - [x] GetMemoByIdAsync（ID指定取得）
+    - [x] UpdateMemoAsync（更新）
+    - [x] DeleteMemoAsync（削除）
+- [x] **単体テスト作成**: MemoServiceのテスト
+  - [x] 各CRUD操作の正常系テスト
+  - [x] 異常系テスト（存在しないID等）
+  - [x] IndexedDB接続テスト
+  - [x] **テスト実行と確認**
 
 ### メモ編集画面（Bootstrap対応）
 - [ ] MemoEditコンポーネントの開発
