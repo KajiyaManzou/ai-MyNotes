@@ -1,30 +1,117 @@
-// スワイプ機能用のJavaScriptヘルパー関数
+// Enhanced swipe functionality with better error handling and animations
 
 window.addClass = (selector, className) => {
-    const element = document.querySelector(selector);
-    if (element) {
-        element.classList.add(className);
+    try {
+        const element = document.querySelector(selector);
+        if (element && !element.classList.contains(className)) {
+            element.classList.add(className);
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.warn(`Failed to add class ${className} to ${selector}:`, error);
+        return false;
     }
 };
 
 window.removeClass = (selector, className) => {
-    const element = document.querySelector(selector);
-    if (element) {
-        element.classList.remove(className);
+    try {
+        const element = document.querySelector(selector);
+        if (element && element.classList.contains(className)) {
+            element.classList.remove(className);
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.warn(`Failed to remove class ${className} from ${selector}:`, error);
+        return false;
     }
 };
 
 window.hasClass = (selector, className) => {
-    const element = document.querySelector(selector);
-    return element ? element.classList.contains(className) : false;
+    try {
+        const element = document.querySelector(selector);
+        return element ? element.classList.contains(className) : false;
+    } catch (error) {
+        console.warn(`Failed to check class ${className} on ${selector}:`, error);
+        return false;
+    }
 };
 
-// スワイプ状態をリセットする関数
+// Enhanced swipe state management with visual feedback
+window.setSwipeState = (selector, state) => {
+    try {
+        const element = document.querySelector(selector);
+        if (!element) return false;
+
+        // Remove all swipe-related classes
+        element.classList.remove('swipe-delete', 'swipe-threshold', 'swipe-reset', 'swiping');
+        
+        // Apply new state with appropriate class
+        switch (state) {
+            case 'swiping':
+                element.classList.add('swiping');
+                break;
+            case 'delete':
+                element.classList.add('swipe-delete');
+                // Add pulse animation to delete button
+                setTimeout(() => {
+                    const deleteAction = element.nextElementSibling;
+                    if (deleteAction && deleteAction.classList.contains('delete-action')) {
+                        const btn = deleteAction.querySelector('.btn');
+                        if (btn) btn.classList.add('pulse-animation');
+                    }
+                }, 100);
+                break;
+            case 'threshold':
+                element.classList.add('swipe-threshold');
+                // Provide haptic feedback if available
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+                break;
+            case 'reset':
+                element.classList.add('swipe-reset');
+                // Clean up after animation
+                setTimeout(() => element.classList.remove('swipe-reset'), 400);
+                break;
+            default:
+                // Reset state
+                break;
+        }
+        return true;
+    } catch (error) {
+        console.warn(`Failed to set swipe state ${state} on ${selector}:`, error);
+        return false;
+    }
+};
+
+// スワイプ状態をリセットする関数 - Enhanced with error handling
 window.resetAllSwipeStates = () => {
-    const swipedCards = document.querySelectorAll('.memo-card.swipe-delete');
-    swipedCards.forEach(card => {
-        card.classList.remove('swipe-delete');
-    });
+    try {
+        const swipedCards = document.querySelectorAll('.memo-card.swipe-delete, .memo-card.swipe-threshold');
+        swipedCards.forEach(card => {
+            window.setSwipeState(`[data-memo-id="${card.closest('[data-memo-id]')?.dataset.memoId}"] .memo-card`, 'reset');
+        });
+        return true;
+    } catch (error) {
+        console.warn('Failed to reset swipe states:', error);
+        return false;
+    }
+};
+
+// Enhanced delete confirmation with better UX
+window.confirmDelete = (memoTitle) => {
+    try {
+        return new Promise((resolve) => {
+            // Create custom confirmation dialog with better styling
+            const confirmed = confirm(`メモ「${memoTitle}」を削除しますか？\n\nこの操作は取り消せません。`);
+            resolve(confirmed);
+        });
+    } catch (error) {
+        console.warn('Failed to show delete confirmation:', error);
+        return Promise.resolve(false);
+    }
 };
 
 // タッチイベントの改善された処理

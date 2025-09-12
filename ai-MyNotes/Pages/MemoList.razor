@@ -174,22 +174,82 @@
     transform: scale(1.1);
 }
 
-/* 左スワイプ削除アクション */
+/* 左スワイプ削除アクション - Enhanced */
 .delete-action {
     z-index: 5;
+    background: linear-gradient(135deg, var(--bs-danger, #dc2626) 0%, #b91c1c 100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0 var(--border-radius, 0.5rem) var(--border-radius, 0.5rem) 0;
 }
 
-/* スワイプアニメーション用 */
+.delete-action::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.delete-action:hover::before {
+    opacity: 1;
+}
+
+/* Enhanced swipe animations */
 .memo-card.swiping {
-    transition: transform 0.1s ease-out;
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
 }
 
 .memo-card.swipe-delete {
     transform: translateX(-80px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15), -2px 0 8px rgba(220, 38, 38, 0.1);
 }
 
 .memo-card.swipe-delete + .delete-action {
     transform: translateX(0) !important;
+    box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Swipe feedback animation */
+.memo-card.swipe-delete + .delete-action .btn {
+    animation: pulseDelete 0.6s ease-in-out;
+}
+
+@@keyframes pulseDelete {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Swipe threshold visual feedback */
+.memo-card.swipe-threshold {
+    transform: translateX(-100px) !important;
+    transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.memo-card.swipe-threshold + .delete-action {
+    transform: translateX(-20px) !important;
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3), inset 2px 0 4px rgba(0, 0, 0, 0.15);
+}
+
+.memo-card.swipe-threshold + .delete-action::before {
+    opacity: 1;
+}
+
+/* Bouncy reset animation */
+.memo-card.swipe-reset {
+    animation: bounceBack 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transform: translateX(0);
+}
+
+@@keyframes bounceBack {
+    0% { transform: translateX(-80px); }
+    60% { transform: translateX(10px); }
+    100% { transform: translateX(0); }
 }
 
 /* レスポンシブ対応 */
@@ -339,56 +399,100 @@
         statusMessage = "";
     }
 
-    // タッチイベントハンドラー
+    // タッチイベントハンドラー - Enhanced with error handling
     private void OnTouchStart(TouchEventArgs e, int memoId)
     {
         if (e.Touches.Length == 0) return;
         
-        var touch = e.Touches[0];
-        touchStates[memoId] = new TouchState
+        try
         {
-            StartX = touch.ClientX,
-            StartY = touch.ClientY,
-            CurrentX = touch.ClientX,
-            CurrentY = touch.ClientY,
-            StartTime = DateTime.Now,
-            IsSwiping = false,
-            IsSwipeDeleteActive = false
-        };
+            var touch = e.Touches[0];
+            touchStates[memoId] = new TouchState
+            {
+                StartX = touch.ClientX,
+                StartY = touch.ClientY,
+                CurrentX = touch.ClientX,
+                CurrentY = touch.ClientY,
+                StartTime = DateTime.Now,
+                IsSwiping = false,
+                IsSwipeDeleteActive = false
+            };
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Touch start error for memo {memoId}: {ex.Message}");
+            // 安全な初期化
+            touchStates[memoId] = new TouchState
+            {
+                StartX = 0,
+                StartY = 0,
+                CurrentX = 0,
+                CurrentY = 0,
+                StartTime = DateTime.Now,
+                IsSwiping = false,
+                IsSwipeDeleteActive = false
+            };
+        }
     }
     
     private async Task OnTouchMove(TouchEventArgs e, int memoId)
     {
         if (e.Touches.Length == 0 || !touchStates.ContainsKey(memoId)) return;
         
-        var touch = e.Touches[0];
-        var state = touchStates[memoId];
-        
-        state.CurrentX = touch.ClientX;
-        state.CurrentY = touch.ClientY;
-        
-        var deltaX = state.StartX - state.CurrentX;
-        var deltaY = Math.Abs(state.StartY - state.CurrentY);
-        
-        // 水平方向のスワイプかどうかを判定（縦スクロールと区別）
-        if (Math.Abs(deltaX) > 10 && Math.Abs(deltaX) > deltaY * 2)
+        try
         {
-            state.IsSwiping = true;
+            var touch = e.Touches[0];
+            var state = touchStates[memoId];
             
-            // 左スワイプで100px以上移動した場合
-            if (deltaX > 100)
+            state.CurrentX = touch.ClientX;
+            state.CurrentY = touch.ClientY;
+            
+            var deltaX = state.StartX - state.CurrentX;
+            var deltaY = Math.Abs(state.StartY - state.CurrentY);
+            
+            // 水平方向のスワイプかどうかを判定（縦スクロールと区別）
+            if (Math.Abs(deltaX) > 10 && Math.Abs(deltaX) > deltaY * 2)
             {
-                if (!state.IsSwipeDeleteActive)
+                if (!state.IsSwiping)
                 {
-                    state.IsSwipeDeleteActive = true;
-                    await JSRuntime.InvokeVoidAsync("addClass", $"[data-memo-id='{memoId}'] .memo-card", "swipe-delete");
+                    state.IsSwiping = true;
+                    await JSRuntime.InvokeVoidAsync("setSwipeState", $"[data-memo-id='{memoId}'] .memo-card", "swiping");
+                }
+                
+                // Enhanced swipe thresholds with better visual feedback
+                if (deltaX > 150) // Threshold for immediate visual feedback
+                {
+                    if (!state.IsSwipeDeleteActive)
+                    {
+                        state.IsSwipeDeleteActive = true;
+                        await JSRuntime.InvokeVoidAsync("setSwipeState", $"[data-memo-id='{memoId}'] .memo-card", "threshold");
+                    }
+                }
+                else if (deltaX > 100) // Standard delete activation
+                {
+                    if (!state.IsSwipeDeleteActive)
+                    {
+                        state.IsSwipeDeleteActive = true;
+                        await JSRuntime.InvokeVoidAsync("setSwipeState", $"[data-memo-id='{memoId}'] .memo-card", "delete");
+                    }
+                }
+                else if (state.IsSwipeDeleteActive && deltaX < 80)
+                {
+                    // スワイプが80px未満に戻った場合は削除状態をリセット
+                    state.IsSwipeDeleteActive = false;
+                    await JSRuntime.InvokeVoidAsync("setSwipeState", $"[data-memo-id='{memoId}'] .memo-card", "reset");
                 }
             }
-            else if (state.IsSwipeDeleteActive && deltaX < 80)
+        }
+        catch (Exception ex)
+        {
+            // エラーハンドリング: タッチイベントの失敗は致命的ではない
+            Console.WriteLine($"Touch move error for memo {memoId}: {ex.Message}");
+            // 状態を安全にリセット
+            if (touchStates.ContainsKey(memoId))
             {
-                // スワイプが80px未満に戻った場合は削除状態をリセット
-                state.IsSwipeDeleteActive = false;
-                await JSRuntime.InvokeVoidAsync("removeClass", $"[data-memo-id='{memoId}'] .memo-card", "swipe-delete");
+                touchStates[memoId].IsSwiping = false;
+                touchStates[memoId].IsSwipeDeleteActive = false;
             }
         }
     }
@@ -397,25 +501,66 @@
     {
         if (!touchStates.ContainsKey(memoId)) return;
         
-        var state = touchStates[memoId];
-        
-        // スワイプ削除状態が非アクティブの場合は元に戻す
-        if (state.IsSwiping && !state.IsSwipeDeleteActive)
+        try
         {
-            await JSRuntime.InvokeVoidAsync("removeClass", $"[data-memo-id='{memoId}'] .memo-card", "swipe-delete");
+            var state = touchStates[memoId];
+            
+            // スワイプ削除状態が非アクティブの場合は元に戻す
+            if (state.IsSwiping && !state.IsSwipeDeleteActive)
+            {
+                await JSRuntime.InvokeVoidAsync("setSwipeState", $"[data-memo-id='{memoId}'] .memo-card", "reset");
+            }
+            else if (!state.IsSwiping)
+            {
+                // 通常のタップ操作の場合は何もしない（EditMemo呼び出しを妨げない）
+            }
         }
-        
-        // 状態をクリア
-        touchStates.Remove(memoId);
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Touch end error for memo {memoId}: {ex.Message}");
+            // フォールバック: 強制的にスワイプ状態をリセット
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("resetAllSwipeStates");
+            }
+            catch (Exception resetEx)
+            {
+                Console.WriteLine($"Failed to reset swipe states: {resetEx.Message}");
+            }
+        }
+        finally
+        {
+            // 状態をクリア
+            touchStates.Remove(memoId);
+        }
     }
     
     private async Task OnTouchCancel(TouchEventArgs e, int memoId)
     {
         if (!touchStates.ContainsKey(memoId)) return;
         
-        // キャンセル時は削除状態をリセット
-        await JSRuntime.InvokeVoidAsync("removeClass", $"[data-memo-id='{memoId}'] .memo-card", "swipe-delete");
-        touchStates.Remove(memoId);
+        try
+        {
+            // キャンセル時は削除状態をリセット
+            await JSRuntime.InvokeVoidAsync("setSwipeState", $"[data-memo-id='{memoId}'] .memo-card", "reset");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Touch cancel error for memo {memoId}: {ex.Message}");
+            // フォールバック: 強制的にスワイプ状態をリセット
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("resetAllSwipeStates");
+            }
+            catch (Exception resetEx)
+            {
+                Console.WriteLine($"Failed to reset swipe states on cancel: {resetEx.Message}");
+            }
+        }
+        finally
+        {
+            touchStates.Remove(memoId);
+        }
     }
 
     public void Dispose()
