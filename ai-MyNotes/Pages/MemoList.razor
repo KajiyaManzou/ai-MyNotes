@@ -46,29 +46,51 @@
                         @foreach (var memo in memos)
                         {
                             <div class="col-12 col-md-6 col-lg-4 mb-3">
-                                <div class="card memo-card h-100" @onclick="() => EditMemo(memo.Id)">
-                                    <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title text-truncate">@memo.Title</h5>
-                                        <p class="card-text flex-grow-1">@memo.GetPreview(120)</p>
-                                        <div class="mt-auto">
-                                            <small class="text-muted d-block">
-                                                <i class="bi bi-calendar-event"></i> 
-                                                作成: @memo.CreatedAt.ToString("MM/dd HH:mm")
-                                            </small>
-                                            @if (memo.UpdatedAt != memo.CreatedAt)
-                                            {
-                                                <small class="text-muted d-block">
-                                                    <i class="bi bi-pencil-square"></i> 
-                                                    更新: @memo.UpdatedAt.ToString("MM/dd HH:mm")
+                                <!-- スワイプ対応メモカード -->
+                                <div class="memo-card-container position-relative overflow-hidden" data-memo-id="@memo.Id">
+                                    <div class="memo-card h-100 card" 
+                                         @onclick="() => EditMemo(memo.Id)"
+                                         @ontouchstart="@((TouchEventArgs e) => OnTouchStart(e, memo.Id))"
+                                         @ontouchmove="@((TouchEventArgs e) => OnTouchMove(e, memo.Id))"
+                                         @ontouchend="@((TouchEventArgs e) => OnTouchEnd(e, memo.Id))"
+                                         @ontouchcancel="@((TouchEventArgs e) => OnTouchCancel(e, memo.Id))">
+                                        <div class="card-body d-flex flex-column">
+                                            <h5 class="card-title text-truncate fw-semibold">@memo.Title</h5>
+                                            <p class="card-text flex-grow-1 memo-preview">
+                                                @memo.GetPreview(120)
+                                            </p>
+                                            <div class="mt-auto">
+                                                <small class="text-muted d-block mb-1">
+                                                    <i class="bi bi-calendar-event me-1"></i> 
+                                                    作成: @memo.CreatedAt.ToString("MM/dd HH:mm")
                                                 </small>
-                                            }
+                                                @if (memo.UpdatedAt != memo.CreatedAt)
+                                                {
+                                                    <small class="text-muted d-block">
+                                                        <i class="bi bi-pencil-square me-1"></i> 
+                                                        更新: @memo.UpdatedAt.ToString("MM/dd HH:mm")
+                                                    </small>
+                                                }
+                                            </div>
                                         </div>
-                                        <!-- 削除ボタン（右上） -->
-                                        <button class="btn btn-outline-danger btn-sm position-absolute top-0 end-0 m-2" 
+                                        
+                                        <!-- ホバー削除ボタン（デスクトップ用） -->
+                                        <button class="btn btn-outline-danger btn-sm memo-delete-btn position-absolute top-0 end-0 m-2" 
                                                @onclick="(e) => DeleteMemo(memo, e)" 
                                                @onclick:stopPropagation="true"
                                                title="削除">
                                             <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- 左スワイプで表示される削除ボタン -->
+                                    <div class="delete-action position-absolute top-0 end-0 h-100 d-flex align-items-center justify-content-center"
+                                         style="width: 80px; background: #dc3545; color: white; transform: translateX(100%); transition: transform 0.3s ease;">
+                                        <button class="btn btn-link text-white p-2" 
+                                               @onclick="(e) => DeleteMemo(memo, e)"
+                                               @onclick:stopPropagation="true"
+                                               title="削除">
+                                            <i class="bi bi-trash-fill fs-4"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -94,23 +116,37 @@
 </div>
 
 <style>
+/* メモカードコンテナ */
+.memo-card-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.375rem;
+}
+
 .memo-card {
     cursor: pointer;
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     position: relative;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.375rem;
+    background: white;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .memo-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    border-color: rgba(0,0,0,.175);
 }
 
 .memo-card .card-title {
     margin-bottom: 0.75rem;
     font-weight: 600;
+    color: #212529;
 }
 
-.memo-card .card-text {
+.memo-preview {
     font-size: 0.9rem;
     line-height: 1.4;
     color: #6c757d;
@@ -118,20 +154,85 @@
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    min-height: 3.6rem; /* 3行分の最小高さ確保 */
 }
 
-.memo-card .btn-outline-danger {
+/* デスクトップ用削除ボタン */
+.memo-delete-btn {
     opacity: 0;
-    transition: opacity 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
     --bs-btn-border-width: 1px;
+    z-index: 10;
 }
 
-.memo-card:hover .btn-outline-danger {
+.memo-card:hover .memo-delete-btn {
     opacity: 1;
 }
 
-.memo-card .btn-outline-danger:hover {
+.memo-delete-btn:hover {
     transform: scale(1.1);
+}
+
+/* 左スワイプ削除アクション */
+.delete-action {
+    z-index: 5;
+}
+
+/* スワイプアニメーション用 */
+.memo-card.swiping {
+    transition: transform 0.1s ease-out;
+}
+
+.memo-card.swipe-delete {
+    transform: translateX(-80px);
+}
+
+.memo-card.swipe-delete + .delete-action {
+    transform: translateX(0) !important;
+}
+
+/* レスポンシブ対応 */
+@@media (max-width: 768px) {
+    .memo-card {
+        touch-action: pan-y; /* 縦スクロールは許可、横スワイプを検知 */
+    }
+    
+    .memo-delete-btn {
+        display: none; /* モバイルではホバーボタンを非表示 */
+    }
+    
+    .memo-preview {
+        -webkit-line-clamp: 2; /* モバイルでは2行表示 */
+        min-height: 2.4rem;
+    }
+}
+
+@@media (min-width: 769px) {
+    .delete-action {
+        display: none !important; /* デスクトップではスワイプ削除アクションを非表示 */
+    }
+}
+
+/* アニメーション改善 */
+.memo-card-container:hover .memo-card {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+/* アクセシビリティ */
+.memo-card:focus {
+    outline: 2px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+/* 状態表示改善 */
+.text-muted {
+    color: #6c757d !important;
+}
+
+.text-muted i {
+    opacity: 0.8;
 }
 </style>
 
@@ -140,6 +241,20 @@
     private bool isLoading = false;
     private string statusMessage = "";
     private CancellationTokenSource? cancellationTokenSource;
+    
+    // タッチ・スワイプ関連の状態管理
+    private Dictionary<int, TouchState> touchStates = new Dictionary<int, TouchState>();
+    
+    private class TouchState
+    {
+        public double StartX { get; set; }
+        public double StartY { get; set; }
+        public double CurrentX { get; set; }
+        public double CurrentY { get; set; }
+        public bool IsSwiping { get; set; }
+        public bool IsSwipeDeleteActive { get; set; }
+        public DateTime StartTime { get; set; }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -222,6 +337,85 @@
     private void ClearStatus()
     {
         statusMessage = "";
+    }
+
+    // タッチイベントハンドラー
+    private void OnTouchStart(TouchEventArgs e, int memoId)
+    {
+        if (e.Touches.Length == 0) return;
+        
+        var touch = e.Touches[0];
+        touchStates[memoId] = new TouchState
+        {
+            StartX = touch.ClientX,
+            StartY = touch.ClientY,
+            CurrentX = touch.ClientX,
+            CurrentY = touch.ClientY,
+            StartTime = DateTime.Now,
+            IsSwiping = false,
+            IsSwipeDeleteActive = false
+        };
+    }
+    
+    private async Task OnTouchMove(TouchEventArgs e, int memoId)
+    {
+        if (e.Touches.Length == 0 || !touchStates.ContainsKey(memoId)) return;
+        
+        var touch = e.Touches[0];
+        var state = touchStates[memoId];
+        
+        state.CurrentX = touch.ClientX;
+        state.CurrentY = touch.ClientY;
+        
+        var deltaX = state.StartX - state.CurrentX;
+        var deltaY = Math.Abs(state.StartY - state.CurrentY);
+        
+        // 水平方向のスワイプかどうかを判定（縦スクロールと区別）
+        if (Math.Abs(deltaX) > 10 && Math.Abs(deltaX) > deltaY * 2)
+        {
+            state.IsSwiping = true;
+            
+            // 左スワイプで100px以上移動した場合
+            if (deltaX > 100)
+            {
+                if (!state.IsSwipeDeleteActive)
+                {
+                    state.IsSwipeDeleteActive = true;
+                    await JSRuntime.InvokeVoidAsync("addClass", $"[data-memo-id='{memoId}'] .memo-card", "swipe-delete");
+                }
+            }
+            else if (state.IsSwipeDeleteActive && deltaX < 80)
+            {
+                // スワイプが80px未満に戻った場合は削除状態をリセット
+                state.IsSwipeDeleteActive = false;
+                await JSRuntime.InvokeVoidAsync("removeClass", $"[data-memo-id='{memoId}'] .memo-card", "swipe-delete");
+            }
+        }
+    }
+    
+    private async Task OnTouchEnd(TouchEventArgs e, int memoId)
+    {
+        if (!touchStates.ContainsKey(memoId)) return;
+        
+        var state = touchStates[memoId];
+        
+        // スワイプ削除状態が非アクティブの場合は元に戻す
+        if (state.IsSwiping && !state.IsSwipeDeleteActive)
+        {
+            await JSRuntime.InvokeVoidAsync("removeClass", $"[data-memo-id='{memoId}'] .memo-card", "swipe-delete");
+        }
+        
+        // 状態をクリア
+        touchStates.Remove(memoId);
+    }
+    
+    private async Task OnTouchCancel(TouchEventArgs e, int memoId)
+    {
+        if (!touchStates.ContainsKey(memoId)) return;
+        
+        // キャンセル時は削除状態をリセット
+        await JSRuntime.InvokeVoidAsync("removeClass", $"[data-memo-id='{memoId}'] .memo-card", "swipe-delete");
+        touchStates.Remove(memoId);
     }
 
     public void Dispose()
