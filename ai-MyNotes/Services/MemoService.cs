@@ -1,4 +1,5 @@
 using ai_MyNotes.Models;
+using ai_MyNotes.Services.Exceptions;
 using TG.Blazor.IndexedDB;
 
 namespace ai_MyNotes.Services
@@ -6,19 +7,22 @@ namespace ai_MyNotes.Services
     /// <summary>
     /// メモデータアクセスサービス
     /// </summary>
-    public class MemoService
+    public class MemoService : IMemoService
     {
         private readonly IndexedDBManager _dbManager;
+        private readonly IErrorHandlingService _errorHandlingService;
 
-        public MemoService(IndexedDBManager dbManager)
+        public MemoService(IndexedDBManager dbManager, IErrorHandlingService errorHandlingService)
         {
             _dbManager = dbManager ?? throw new ArgumentNullException(nameof(dbManager));
+            _errorHandlingService = errorHandlingService ?? throw new ArgumentNullException(nameof(errorHandlingService));
         }
 
         /// <summary>
         /// IndexedDBの初期化
         /// </summary>
         /// <returns>初期化が成功したかどうか</returns>
+        /// <exception cref="IndexedDbException">初期化に失敗した場合</exception>
         public async Task<bool> InitializeDatabaseAsync()
         {
             try
@@ -29,9 +33,9 @@ namespace ai_MyNotes.Services
             }
             catch (Exception ex)
             {
-                // ログ出力（実際の実装では適切なロガーを使用）
-                System.Diagnostics.Debug.WriteLine($"Database initialization failed: {ex.Message}");
-                return false;
+                // エラーハンドリングサービスでエラーを処理
+                var errorMessage = await _errorHandlingService.HandleIndexedDbErrorAsync(ex, "Database initialization");
+                throw IndexedDbException.InitializationFailure(ex);
             }
         }
 
@@ -66,8 +70,8 @@ namespace ai_MyNotes.Services
         /// <param name="memo">作成するメモ</param>
         /// <returns>作成されたメモ</returns>
         /// <exception cref="ArgumentNullException">memoがnullの場合</exception>
-        /// <exception cref="InvalidOperationException">バリデーションエラーの場合</exception>
-        /// <exception cref="Exception">データベース操作エラーの場合</exception>
+        /// <exception cref="DataOperationException">バリデーションエラーまたは保存失敗の場合</exception>
+        /// <exception cref="IndexedDbException">データベース操作エラーの場合</exception>
         public async Task<Memo> CreateMemoAsync(Memo memo)
         {
             if (memo == null)
@@ -79,8 +83,9 @@ namespace ai_MyNotes.Services
                 var (isValid, errors) = memo.Validate();
                 if (!isValid)
                 {
-                    var errorMessage = string.Join(", ", errors);
-                    throw new InvalidOperationException($"メモの作成に失敗しました: {errorMessage}");
+                    var validationException = DataOperationException.ValidationFailure(errors);
+                    await _errorHandlingService.HandleDataOperationErrorAsync(validationException, "Create memo validation");
+                    throw validationException;
                 }
 
                 // 自動修正とタイトル生成
@@ -91,7 +96,9 @@ namespace ai_MyNotes.Services
                 // IDが既に設定されている場合（更新扱い）は例外
                 if (memo.Id != 0)
                 {
-                    throw new InvalidOperationException("新規作成ではIDを指定できません");
+                    var invalidOpException = DataOperationException.ValidationFailure(new[] { "新規作成ではIDを指定できません" });
+                    await _errorHandlingService.HandleDataOperationErrorAsync(invalidOpException, "Create memo ID validation");
+                    throw invalidOpException;
                 }
 
                 // IndexedDBに保存
@@ -106,10 +113,12 @@ namespace ai_MyNotes.Services
                 System.Diagnostics.Debug.WriteLine($"Memo created successfully: Title='{memo.Title}', Content length={memo.Content?.Length ?? 0}");
                 return memo;
             }
-            catch (Exception ex) when (!(ex is ArgumentNullException || ex is InvalidOperationException))
+            catch (Exception ex) when (!(ex is ArgumentNullException || ex is DataOperationException))
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to create memo: {ex.Message}");
-                throw new Exception("メモの作成中にエラーが発生しました", ex);
+                // IndexedDBエラーまたは予期しないエラー
+                var saveException = DataOperationException.SaveFailure("Create memo", ex);
+                await _errorHandlingService.HandleDataOperationErrorAsync(saveException, "Create memo", memo.Id.ToString());
+                throw saveException;
             }
         }
 
@@ -117,7 +126,8 @@ namespace ai_MyNotes.Services
         /// 全メモを取得（更新日時降順）
         /// </summary>
         /// <returns>メモのリスト</returns>
-        /// <exception cref="Exception">データベース操作エラーの場合</exception>
+        /// <exception cref="DataOperationException">データ読み込み失敗の場合</exception>
+        /// <exception cref="IndexedDbException">データベース操作エラーの場合</exception>
         public async Task<List<Memo>> GetMemosAsync()
         {
             try
@@ -142,8 +152,10 @@ namespace ai_MyNotes.Services
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Failed to get memos: {ex.Message}");
-                throw new Exception("メモの取得中にエラーが発生しました", ex);
+                // データ読み込み失敗エラーとして処理
+                var loadException = DataOperationException.LoadFailure("Get all memos", ex);
+                await _errorHandlingService.HandleDataOperationErrorAsync(loadException, "Get memos");
+                throw loadException;
             }
         }
 

@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ai-MyNotes",
   "resources": {
-    "hash": "sha256-Cw8st+EjneLhqGBTXxZw2UOaY4benuofP3E5YA0dnEY=",
+    "hash": "sha256-5Vv5uB5wwg4QjM5M8TdinaOwI/xWcLPsWVZcG7ji/OQ=",
     "jsModuleNative": {
       "dotnet.native.8.0.19.cdrc1eyzer.js": "sha256-O/NCYcAN9uPocD7ns7AzF/cqx7f5vL1PTJCQs0vEXyk="
     },
@@ -209,10 +209,10 @@
       "mscorlib.wasm": "sha256-RLW/7NVuhoPfq151II3kX2kWHgBwQgpCw9aemQNg3to=",
       "netstandard.wasm": "sha256-lAg5WvTiA8wbsIwlr51xh0YWpXT9F5EX3Cnv+11O/mU=",
       "System.Private.CoreLib.wasm": "sha256-3O3muuRQwoLRecYRjfIFWUURvTjP4EmD2O8wYg2UDNY=",
-      "ai-MyNotes.wasm": "sha256-sk+raBZOPnvsJo6CkqMJ4G6+gmAkoixGOROo/he946c="
+      "ai-MyNotes.wasm": "sha256-UPZ1KyooNe2hGMRkYUx+sJUCBtQGNTeSQTiSaPKa83g="
     },
     "pdb": {
-      "ai-MyNotes.pdb": "sha256-SE3JA60iWZb0/etoFs9NCD+UoX6g1RqJcyLytT9QM6U="
+      "ai-MyNotes.pdb": "sha256-1n2cpsBwzuM/8AJLWLEsIEcnuSzfI9QXrHSZgZDTkUs="
     }
   },
   "cacheBootResources": true,

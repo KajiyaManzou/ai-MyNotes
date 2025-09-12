@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using ai_MyNotes;
 using ai_MyNotes.Services;
+using ai_MyNotes.Services.Exceptions;
 using ai_MyNotes.Models;
 using TG.Blazor.IndexedDB;
 
@@ -26,6 +27,14 @@ builder.Services.AddIndexedDB(dbStore =>
 });
 
 // アプリケーションサービスの登録
-builder.Services.AddScoped<MemoService>();
+builder.Services.AddScoped<IErrorHandlingService, ErrorHandlingService>();
+builder.Services.AddScoped<IMemoService, MemoService>();
+builder.Services.AddScoped<GlobalErrorHandler>();
 
-await builder.Build().RunAsync();
+var app = builder.Build();
+
+// グローバルエラーハンドラーの設定
+var globalErrorHandler = app.Services.GetRequiredService<GlobalErrorHandler>();
+globalErrorHandler.Initialize();
+
+await app.RunAsync();

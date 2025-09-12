@@ -32,11 +32,7 @@ namespace ai_MyNotes.Tests.Pages
             Services.AddSingleton(mockNavigation.Object);
             
             // 実際のサービスの代わりにダミーを登録
-            Services.AddSingleton<MemoService>(provider => 
-            {
-                var dbManager = new Mock<IndexedDBManager>();
-                return new MemoService(dbManager.Object);
-            });
+            Services.AddSingleton<IMemoService>(Mock.Of<IMemoService>());
         }
 
         [Fact]

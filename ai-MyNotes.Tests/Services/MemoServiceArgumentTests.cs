@@ -1,5 +1,6 @@
 using ai_MyNotes.Models;
 using ai_MyNotes.Services;
+using Moq;
 using Xunit;
 
 namespace ai_MyNotes.Tests.Services
@@ -13,8 +14,11 @@ namespace ai_MyNotes.Tests.Services
         [Fact]
         public void Constructor_WithNullDbManager_ShouldThrowArgumentNullException()
         {
+            // Arrange
+            var mockErrorHandlingService = Mock.Of<IErrorHandlingService>();
+            
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new MemoService(null!));
+            Assert.Throws<ArgumentNullException>(() => new MemoService(null!, mockErrorHandlingService));
         }
 
         [Fact]
