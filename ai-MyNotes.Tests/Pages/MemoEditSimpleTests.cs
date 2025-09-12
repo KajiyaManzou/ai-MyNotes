@@ -1,6 +1,7 @@
 using ai_MyNotes.Models;
 using ai_MyNotes.Pages;
 using ai_MyNotes.Services;
+using ai_MyNotes.Tests.TestHelpers;
 using Bunit;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,14 +23,10 @@ namespace ai_MyNotes.Tests.Pages
         {
             // 最小限のモック設定
             var mockJSRuntime = new Mock<IJSRuntime>();
-            var mockNavigation = new Mock<NavigationManager>();
-            
-            // NavigationManager の base URI 設定
-            mockNavigation.Setup(x => x.BaseUri).Returns("https://localhost/");
-            mockNavigation.Setup(x => x.Uri).Returns("https://localhost/");
+            var mockNavigation = new MockNavigationManager();
 
             Services.AddSingleton(mockJSRuntime.Object);
-            Services.AddSingleton(mockNavigation.Object);
+            Services.AddSingleton<NavigationManager>(mockNavigation);
             
             // 実際のサービスの代わりにダミーを登録
             Services.AddSingleton<IMemoService>(Mock.Of<IMemoService>());

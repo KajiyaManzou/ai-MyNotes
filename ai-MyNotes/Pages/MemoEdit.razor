@@ -95,7 +95,6 @@
                     <textarea @bind="CurrentMemo.Content"
                              @oninput="OnContentInput"
                              @onfocusout="OnFocusOut"
-                             @onbeforeunload="OnBeforeUnload"
                              class="form-control flex-grow-1 resize-none" 
                              id="memoContent" 
                              style="min-height: 400px; height: 100%;"
@@ -231,7 +230,7 @@
         }
     }
 
-    private void OnContentInput(ChangeEventArgs e)
+    private async void OnContentInput(ChangeEventArgs e)
     {
         // 内容の変更を検知
         var newContent = e.Value?.ToString() ?? "";
@@ -239,6 +238,9 @@
         
         // 変更フラグの更新
         hasUnsavedChanges = !IsContentEqual(CurrentMemo.Content, lastContent);
+        
+        // ページ離脱時の警告状態を更新
+        await UpdateUnsavedChangesFlag();
         
         // リアルタイムタイトル生成
         if (!string.IsNullOrWhiteSpace(CurrentMemo.Content))
@@ -337,7 +339,7 @@
             OriginalMemo.UpdatedAt = CurrentMemo.UpdatedAt;
             
             // JavaScript状態の更新
-            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = false;");
+            await UpdateUnsavedChangesFlag();
             
             StateHasChanged();
             
@@ -426,26 +428,23 @@
         statusMessage = "";
     }
 
-    // ページ離脱時の警告（beforeunload イベント）
-    private async Task OnBeforeUnload()
+    // ページ離脱時の未保存変更フラグを設定
+    private async Task UpdateUnsavedChangesFlag()
     {
-        if (hasUnsavedChanges)
+        try
         {
-            await JSRuntime.InvokeVoidAsync("eval", @"
-                window.addEventListener('beforeunload', function(e) {
-                    if (window.hasUnsavedChanges) {
-                        e.preventDefault();
-                        e.returnValue = '';
-                        return '';
-                    }
-                });
-            ");
-            
-            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = true;");
+            if (hasUnsavedChanges)
+            {
+                await JSRuntime.InvokeVoidAsync("eval", "if (window.setUnsavedChanges) window.setUnsavedChanges(true);");
+            }
+            else
+            {
+                await JSRuntime.InvokeVoidAsync("eval", "if (window.setUnsavedChanges) window.setUnsavedChanges(false);");
+            }
         }
-        else
+        catch
         {
-            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = false;");
+            // JavaScript実行に失敗してもコンポーネントは継続
         }
     }
 
@@ -473,14 +472,7 @@
         }
 
         // 未保存状態をJavaScriptに通知
-        if (hasUnsavedChanges)
-        {
-            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = true;");
-        }
-        else
-        {
-            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = false;");
-        }
+        await UpdateUnsavedChangesFlag();
     }
 
     // 自動保存前の最終確認（重複保存防止）
@@ -568,7 +560,7 @@
         // JavaScriptの状態もクリア
         try
         {
-            JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = false;");
+            JSRuntime.InvokeVoidAsync("eval", "if (window.setUnsavedChanges) window.setUnsavedChanges(false);");
         }
         catch
         {

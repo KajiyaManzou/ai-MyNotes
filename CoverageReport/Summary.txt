@@ -1,0 +1,43 @@
+Summary
+  Generated on: 9/12/2025 - 8:06:48 AM
+  Coverage date: 9/12/2025 - 8:05:42 AM
+  Parser: Cobertura
+  Assemblies: 1
+  Classes: 21
+  Files: 13
+  Line coverage: 14.3%
+  Covered lines: 206
+  Uncovered lines: 1233
+  Coverable lines: 1439
+  Total lines: 3090
+  Branch coverage: 18% (87 of 482)
+  Covered branches: 87
+  Total branches: 482
+  Method coverage: 15.7% (25 of 159)
+  Full method coverage: 10% (16 of 159)
+  Covered methods: 25
+  Fully covered methods: 16
+  Total methods: 159
+
+ai-MyNotes                                                14.3%
+  ai_MyNotes.Components.Navigation.NavBar                    0%
+  ai_MyNotes.Layout.NavMenu                                  0%
+  ai_MyNotes.Models.Memo                                  80.4%
+  ai_MyNotes.Pages.Counter                                   0%
+  ai_MyNotes.Pages.Home                                      0%
+  ai_MyNotes.Pages.MemoEdit                               30.4%
+  ai_MyNotes.Pages.MemoList                                  0%
+  ai_MyNotes.Pages.Weather                                   0%
+  ai_MyNotes.Services.ErrorEventArgs                         0%
+  ai_MyNotes.Services.ErrorHandlingService                   0%
+  ai_MyNotes.Services.ErrorLogEntry                          0%
+  ai_MyNotes.Services.ErrorMessage                           0%
+  ai_MyNotes.Services.ErrorRecord                            0%
+  ai_MyNotes.Services.ErrorStatistics                        0%
+  ai_MyNotes.Services.Exceptions.DataOperationException      0%
+  ai_MyNotes.Services.Exceptions.IndexedDbException          0%
+  ai_MyNotes.Services.Exceptions.MyNotesException            0%
+  ai_MyNotes.Services.Exceptions.NetworkException            0%
+  ai_MyNotes.Services.GlobalErrorHandler                     0%
+  ai_MyNotes.Services.MemoService                          1.5%
+  Program                                                    0%
