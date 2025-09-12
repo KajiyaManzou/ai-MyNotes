@@ -58,17 +58,53 @@
                 </div>
             }
 
-            <!-- メモ編集エリア -->
-            <div class="mb-3">
-                <label for="memoContent" class="form-label visually-hidden">メモ内容</label>
-                <textarea @bind="CurrentMemo.Content" 
-                         @bind:event="oninput"
-                         @onfocusout="OnFocusOut"
-                         class="form-control" 
-                         id="memoContent" 
-                         rows="20" 
-                         placeholder="メモを入力してください...（1行目が自動的にタイトルになります）"
-                         disabled="@isSaving"></textarea>
+            <!-- メモ編集エリア（Bootstrap強化） -->
+            <div class="mb-3 flex-grow-1 d-flex flex-column">
+                <label for="memoContent" class="form-label fw-semibold">
+                    メモ内容
+                    <span class="badge bg-info ms-2">1行目が自動的にタイトルになります</span>
+                </label>
+                <div class="form-floating flex-grow-1 d-flex flex-column">
+                    <textarea @bind="CurrentMemo.Content"
+                             @oninput="OnContentInput"
+                             @onfocusout="OnFocusOut"
+                             @onbeforeunload="OnBeforeUnload"
+                             class="form-control flex-grow-1 resize-none" 
+                             id="memoContent" 
+                             style="min-height: 400px; height: 100%;"
+                             placeholder="メモを入力してください..."
+                             disabled="@isSaving"
+                             spellcheck="false"></textarea>
+                    <label for="memoContent" class="text-muted">
+                        メモ内容を入力...
+                    </label>
+                </div>
+                
+                <!-- 文字数カウンター -->
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <small class="text-muted">
+                        <i class="bi bi-type"></i>
+                        文字数: <span class="fw-bold">@(CurrentMemo.Content?.Length ?? 0)</span> / 10,000
+                        @if (CurrentMemo.Content?.Length > 8000)
+                        {
+                            <span class="text-warning ms-2">(残り @(10000 - CurrentMemo.Content.Length) 文字)</span>
+                        }
+                    </small>
+                    <div class="text-end">
+                        @if (hasUnsavedChanges)
+                        {
+                            <small class="text-warning">
+                                <i class="bi bi-exclamation-triangle"></i> 未保存の変更があります
+                            </small>
+                        }
+                        else if (lastSavedAt.HasValue)
+                        {
+                            <small class="text-success">
+                                <i class="bi bi-check-circle"></i> 保存済み
+                            </small>
+                        }
+                    </div>
+                </div>
             </div>
 
             <!-- メモ情報 -->
@@ -95,12 +131,15 @@
     [Parameter] public int? Id { get; set; }
 
     private Memo CurrentMemo = new Memo();
+    private Memo OriginalMemo = new Memo(); // 変更検知用の元データ
     private bool IsEditMode => Id.HasValue && Id.Value > 0;
     private bool isSaving = false;
+    private bool hasUnsavedChanges = false;
     private string statusMessage = "";
     private DateTime? lastSavedAt = null;
     private Timer? autoSaveTimer;
     private CancellationTokenSource? cancellationTokenSource;
+    private string? lastContent = ""; // 前回の内容（変更検知用）
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,13 +173,23 @@
             if (memo != null)
             {
                 CurrentMemo = memo;
+                OriginalMemo = new Memo 
+                { 
+                    Id = memo.Id, 
+                    Title = memo.Title, 
+                    Content = memo.Content, 
+                    CreatedAt = memo.CreatedAt, 
+                    UpdatedAt = memo.UpdatedAt 
+                }; // 元データをコピー
                 lastSavedAt = memo.UpdatedAt;
+                lastContent = memo.Content;
+                hasUnsavedChanges = false;
             }
             else
             {
                 statusMessage = "エラー: メモが見つかりませんでした";
                 await Task.Delay(3000);
-                NavigateToList();
+                await NavigateToList();
             }
         }
         catch (Exception ex)
@@ -149,11 +198,39 @@
         }
     }
 
-    private void OnContentChanged()
+    private void OnContentInput(ChangeEventArgs e)
     {
-        // 自動保存タイマーをリセット
+        // 内容の変更を検知
+        var newContent = e.Value?.ToString() ?? "";
+        CurrentMemo.Content = newContent;
+        
+        // 変更フラグの更新
+        hasUnsavedChanges = !IsContentEqual(CurrentMemo.Content, lastContent);
+        
+        // リアルタイムタイトル生成
+        if (!string.IsNullOrWhiteSpace(CurrentMemo.Content))
+        {
+            var tempMemo = new Memo { Content = CurrentMemo.Content };
+            tempMemo.UpdateTitleFromContent();
+            CurrentMemo.Title = tempMemo.Title;
+        }
+        
+        // 自動保存タイマーをリセット（3秒後に保存）
         autoSaveTimer?.Dispose();
-        autoSaveTimer = new Timer(async _ => await AutoSave(), null, 3000, Timeout.Infinite);
+        autoSaveTimer = new Timer(async _ => 
+        {
+            if (hasUnsavedChanges && !isSaving)
+            {
+                await InvokeAsync(async () => await AutoSave());
+            }
+        }, null, 3000, Timeout.Infinite);
+        
+        StateHasChanged();
+    }
+
+    private bool IsContentEqual(string? content1, string? content2)
+    {
+        return string.Equals(content1?.Trim() ?? "", content2?.Trim() ?? "", StringComparison.Ordinal);
     }
 
     private async Task OnFocusOut()
@@ -184,6 +261,14 @@
             if (cancellationTokenSource?.Token.IsCancellationRequested == true)
                 return;
 
+            // バリデーション実行
+            var (isValid, errors) = CurrentMemo.Validate();
+            if (!isValid)
+            {
+                statusMessage = $"エラー: {string.Join(", ", errors)}";
+                return;
+            }
+
             CurrentMemo.UpdateTitleFromContent();
             CurrentMemo.Touch();
 
@@ -198,11 +283,22 @@
                 CurrentMemo = savedMemo;
                 statusMessage = "メモを作成しました";
                 
-                // 新規作成後は編集モードに移行
+                // 新規作成後は編集モードに移行（URL更新）
+                Id = CurrentMemo.Id;
                 Navigation.NavigateTo($"/edit/{CurrentMemo.Id}", replace: true);
             }
 
+            // 保存成功時の状態更新
             lastSavedAt = DateTime.Now;
+            lastContent = CurrentMemo.Content;
+            hasUnsavedChanges = false;
+            
+            // 元データを更新（変更検知用）
+            OriginalMemo.Content = CurrentMemo.Content;
+            OriginalMemo.Title = CurrentMemo.Title;
+            OriginalMemo.UpdatedAt = CurrentMemo.UpdatedAt;
+            
+            StateHasChanged();
             
             // ステータスメッセージを3秒後に自動クリア
             await Task.Delay(3000);
@@ -214,7 +310,7 @@
         }
         catch (Exception ex)
         {
-            statusMessage = $"エラー: {ex.Message}";
+            statusMessage = $"保存エラー: {ex.Message}";
         }
         finally
         {
@@ -240,7 +336,7 @@
             await MemoService.DeleteMemoAsync(CurrentMemo.Id);
             statusMessage = "メモを削除しました";
             await Task.Delay(1000);
-            NavigateToList();
+            await NavigateToList();
         }
         catch (Exception ex)
         {
@@ -248,8 +344,21 @@
         }
     }
 
-    private void NavigateToList()
+    private async Task NavigateToList()
     {
+        // 未保存の変更がある場合の確認
+        if (hasUnsavedChanges)
+        {
+            var shouldSave = await JSRuntime.InvokeAsync<bool>("confirm", 
+                "未保存の変更があります。保存してから移動しますか？\n" +
+                "「OK」で保存してから移動、「キャンセル」で保存せずに移動します。");
+            
+            if (shouldSave)
+            {
+                await SaveMemo();
+            }
+        }
+        
         Navigation.NavigateTo("/list");
     }
 
@@ -258,10 +367,100 @@
         statusMessage = "";
     }
 
+    // ページ離脱時の警告（beforeunload イベント）
+    private async Task OnBeforeUnload()
+    {
+        if (hasUnsavedChanges)
+        {
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                window.addEventListener('beforeunload', function(e) {
+                    if (window.hasUnsavedChanges) {
+                        e.preventDefault();
+                        e.returnValue = '';
+                        return '';
+                    }
+                });
+            ");
+            
+            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = true;");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = false;");
+        }
+    }
+
+    // コンポーネントマウント後にJSイベントリスナーを設定
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // beforeunload イベントの設定
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                window.hasUnsavedChanges = false;
+                window.addEventListener('beforeunload', function(e) {
+                    if (window.hasUnsavedChanges) {
+                        e.preventDefault();
+                        e.returnValue = '未保存の変更があります。ページを離れますか？';
+                        return '未保存の変更があります。ページを離れますか？';
+                    }
+                });
+                
+                // Blazor コンポーネント向けの状態更新関数
+                window.setUnsavedChanges = function(hasChanges) {
+                    window.hasUnsavedChanges = hasChanges;
+                };
+            ");
+        }
+
+        // 未保存状態をJavaScriptに通知
+        if (hasUnsavedChanges)
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = true;");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = false;");
+        }
+    }
+
+    // 自動保存前の最終確認（重複保存防止）
+    private async Task ForceSaveBeforeExit()
+    {
+        if (hasUnsavedChanges && !isSaving && !string.IsNullOrWhiteSpace(CurrentMemo.Content))
+        {
+            try
+            {
+                await SaveMemo();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exit save failed: {ex.Message}");
+            }
+        }
+    }
+
     public void Dispose()
     {
+        // 終了時に未保存の変更があれば保存を試行
+        if (hasUnsavedChanges && !string.IsNullOrWhiteSpace(CurrentMemo.Content))
+        {
+            // 同期的に保存を試行（Disposeは非同期メソッドを呼べない）
+            Task.Run(async () => await ForceSaveBeforeExit());
+        }
+
         autoSaveTimer?.Dispose();
         cancellationTokenSource?.Cancel();
         cancellationTokenSource?.Dispose();
+        
+        // JavaScriptの状態もクリア
+        try
+        {
+            JSRuntime.InvokeVoidAsync("eval", "window.hasUnsavedChanges = false;");
+        }
+        catch
+        {
+            // Dispose時にJSRuntimeが使用できない場合があるので例外は無視
+        }
     }
 }
