@@ -37,6 +37,10 @@
       "PackagePath": "staticwebassets/index.html"
     },
     {
+      "Id": "/workspace/ai-MyNotes/wwwroot/js/swipe-helper.js",
+      "PackagePath": "staticwebassets/js/swipe-helper.js"
+    },
+    {
       "Id": "/workspace/ai-MyNotes/wwwroot/sample-data/weather.json",
       "PackagePath": "staticwebassets/sample-data/weather.json"
     },

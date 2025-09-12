@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "znTSBTMCmgxTkgUS4/2+kLVUfXuo0GT9mg2WG7qD5VE=",
+  "Hash": "q11scf282RWRpNaSm7IvtGqbMtxJW3kSYAGUzSKbnGo=",
   "Source": "ai-MyNotes",
   "BasePath": "/",
   "Mode": "Root",
@@ -7976,6 +7976,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/index.html"
+    },
+    {
+      "Identity": "/workspace/ai-MyNotes/wwwroot/js/swipe-helper.js",
+      "SourceId": "ai-MyNotes",
+      "SourceType": "Discovered",
+      "ContentRoot": "/workspace/ai-MyNotes/wwwroot/",
+      "BasePath": "/",
+      "RelativePath": "js/swipe-helper.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/js/swipe-helper.js"
     },
     {
       "Identity": "/workspace/ai-MyNotes/wwwroot/sample-data/weather.json",
