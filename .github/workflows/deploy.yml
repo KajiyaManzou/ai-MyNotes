@@ -31,30 +31,44 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Run tests (continue on failure)
-      run: dotnet test --no-restore --verbosity normal || echo "Tests failed but continuing deployment"
-      continue-on-error: true
-
     - name: Build
       run: dotnet build --no-restore --configuration Release
 
     - name: Publish
       run: dotnet publish ai-MyNotes/ai-MyNotes.csproj -c Release -o dist/
 
+    - name: Verify publish output
+      run: |
+        echo "Checking published files..."
+        ls -la dist/
+        echo "Checking wwwroot directory..."
+        ls -la dist/wwwroot/ | head -10
+        echo "Checking critical files..."
+        ls -la dist/wwwroot/index.html dist/wwwroot/manifest.json || echo "Some files missing"
+
     - name: Setup base path for GitHub Pages
       run: |
-        # GitHub Pagesのサブパス対応
-        REPO_NAME=$(echo ${{ github.repository }} | cut -d'/' -f2)
+        echo "Setting up GitHub Pages deployment paths..."
+        
+        # Get repository name safely
+        REPO_NAME="${{ github.event.repository.name }}"
         echo "Repository name: $REPO_NAME"
         
-        # index.htmlのbase hrefを更新
-        sed -i "s|<base href=\"/\" />|<base href=\"/$REPO_NAME/\" />|g" dist/wwwroot/index.html
+        # Check if files exist before modification
+        if [ -f "dist/wwwroot/index.html" ]; then
+          sed -i "s|<base href=\"/\" />|<base href=\"/$REPO_NAME/\" />|g" dist/wwwroot/index.html
+          echo "Updated base href in index.html"
+        else
+          echo "Warning: index.html not found"
+        fi
         
-        # manifest.jsonのstart_urlとscopeを更新  
-        sed -i "s|\"start_url\": \"./\"|\"start_url\": \"/$REPO_NAME/\"|g" dist/wwwroot/manifest.json
-        sed -i "s|\"scope\": \"./\"|\"scope\": \"/$REPO_NAME/\"|g" dist/wwwroot/manifest.json
-        
-        echo "Updated base paths for GitHub Pages deployment"
+        if [ -f "dist/wwwroot/manifest.json" ]; then
+          sed -i "s|\"start_url\": \"./\"|\"start_url\": \"/$REPO_NAME/\"|g" dist/wwwroot/manifest.json
+          sed -i "s|\"scope\": \"./\"|\"scope\": \"/$REPO_NAME/\"|g" dist/wwwroot/manifest.json
+          echo "Updated paths in manifest.json"
+        else
+          echo "Warning: manifest.json not found"
+        fi
 
     - name: Add .nojekyll file
       run: touch dist/wwwroot/.nojekyll
