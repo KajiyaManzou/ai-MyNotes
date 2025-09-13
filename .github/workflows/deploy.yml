@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -15,49 +15,45 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: 8.0.x
 
-    - name: Build and Publish
-      run: |
-        dotnet restore
-        dotnet publish ai-MyNotes/ai-MyNotes.csproj -c Release -o publish/
+    - name: Restore dependencies
+      run: dotnet restore
 
-    - name: Prepare for GitHub Pages
-      run: |
-        # Create .nojekyll to disable Jekyll processing
-        touch publish/wwwroot/.nojekyll
-        
-        # Update base href for GitHub Pages
-        REPO_NAME="ai-MyNotes"
-        if [ -f "publish/wwwroot/index.html" ]; then
-          sed -i 's|<base href="/" />|<base href="/ai-MyNotes/" />|g' publish/wwwroot/index.html
-        fi
-        
-        # Update manifest.json paths
-        if [ -f "publish/wwwroot/manifest.json" ]; then
-          sed -i 's|"start_url": "./"|"start_url": "/ai-MyNotes/"|g' publish/wwwroot/manifest.json
-          sed -i 's|"scope": "./"|"scope": "/ai-MyNotes/"|g' publish/wwwroot/manifest.json
-        fi
+    - name: Build
+      run: dotnet build --no-restore
 
-    - name: Setup Pages
-      uses: actions/configure-pages@v4
+    - name: Publish
+      run: dotnet publish ai-MyNotes/ai-MyNotes.csproj -c Release -o release --nologo
 
-    - name: Upload Pages artifact
+    - name: Update index.html base tag
+      run: sed -i 's/<base href="\/" \/>/<base href="\/ai-MyNotes\/" \/>/g' release/wwwroot/index.html
+
+    - name: Add .nojekyll
+      run: touch release/wwwroot/.nojekyll
+
+    - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: 'publish/wwwroot'
+        path: ./release/wwwroot
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
-      if: github.ref == 'refs/heads/main'
