@@ -36,7 +36,9 @@ jobs:
       run: dotnet publish ai-MyNotes/ai-MyNotes.csproj -c Release -o release --nologo
 
     - name: Update index.html base tag
-      run: sed -i 's/<base href="\/" \/>/<base href="\/ai-MyNotes\/" \/>/g' release/wwwroot/index.html
+      run: |
+        REPO_NAME=$(echo ${{ github.repository }} | cut -d"/" -f2)
+        sed -i "s|<base href=\"/\" />|<base href=\"/$REPO_NAME/\" />|g" release/wwwroot/index.html
 
     - name: Add .nojekyll
       run: touch release/wwwroot/.nojekyll
