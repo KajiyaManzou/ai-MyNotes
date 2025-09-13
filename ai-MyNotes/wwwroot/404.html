@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ai-MyNotes</title>
+    <base href="/ai-MyNotes/" />
+    
+    <!-- GitHub Pages SPA Fallback Script -->
+    <script>
+        // Store the path and redirect to index.html with query parameter
+        // This allows Blazor routing to handle the original URL
+        (function(l) {
+            if (l.pathname !== '/ai-MyNotes/') {
+                var path = l.pathname.replace('/ai-MyNotes', '') || '/';
+                var search = l.search || '';
+                var hash = l.hash || '';
+                
+                // Redirect to index.html with the original path as query parameter
+                window.location.replace('/ai-MyNotes/?p=' + 
+                    encodeURIComponent(path + search + hash));
+            }
+        }(window.location));
+    </script>
+</head>
+<body>
+    <div style="text-align: center; margin-top: 50px;">
+        <h3>Loading ai-MyNotes...</h3>
+        <p>Redirecting to the application...</p>
+    </div>
+</body>
+</html>
