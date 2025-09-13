@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Production Environment Test</title>
+</head>
+<body>
+    <h1>AI-MyNotes Production Environment Test</h1>
+    <div id="test-results"></div>
+    <iframe id="app-frame" src="http://localhost:8080/" width="100%" height="600px"></iframe>
+
+    <script>
+        const results = document.getElementById('test-results');
+        
+        function log(message, type = 'info') {
+            const div = document.createElement('div');
+            div.style.color = type === 'error' ? 'red' : type === 'success' ? 'green' : 'black';
+            div.textContent = `[${new Date().toISOString()}] ${message}`;
+            results.appendChild(div);
+        }
+
+        // PWA機能テスト
+        async function testPWAFunctionality() {
+            log('=== PWA Functionality Test ===');
+            
+            try {
+                // Manifest.jsonテスト
+                const manifestResponse = await fetch('http://localhost:8080/manifest.json');
+                const manifest = await manifestResponse.json();
+                log(`✓ Manifest loaded: ${manifest.name}`, 'success');
+                log(`✓ Icons count: ${manifest.icons.length}`, 'success');
+                
+                // アイコンファイルテスト
+                for (const icon of manifest.icons.slice(0, 3)) { // 最初の3つをテスト
+                    const iconResponse = await fetch(`http://localhost:8080/${icon.src}`);
+                    if (iconResponse.ok) {
+                        log(`✓ Icon accessible: ${icon.src} (${icon.sizes})`, 'success');
+                    } else {
+                        log(`✗ Icon not accessible: ${icon.src}`, 'error');
+                    }
+                }
+                
+            } catch (error) {
+                log(`✗ PWA Test Error: ${error.message}`, 'error');
+            }
+        }
+
+        // IndexedDBテスト
+        async function testIndexedDB() {
+            log('=== IndexedDB Functionality Test ===');
+            
+            try {
+                // IndexedDBサポートチェック
+                if (!window.indexedDB) {
+                    log('✗ IndexedDB not supported in this browser', 'error');
+                    return;
+                }
+                log('✓ IndexedDB supported', 'success');
+                
+                // データベース作成テスト
+                const dbRequest = indexedDB.open('TestDB', 1);
+                
+                dbRequest.onerror = () => {
+                    log('✗ IndexedDB open error', 'error');
+                };
+                
+                dbRequest.onsuccess = (event) => {
+                    const db = event.target.result;
+                    log('✓ IndexedDB database opened successfully', 'success');
+                    
+                    // テストデータの作成・読み取り
+                    if (db.objectStoreNames.contains('testStore')) {
+                        const transaction = db.transaction(['testStore'], 'readwrite');
+                        const store = transaction.objectStore('testStore');
+                        
+                        const testData = { id: 1, content: 'Test memo content', timestamp: new Date() };
+                        
+                        const addRequest = store.add(testData);
+                        addRequest.onsuccess = () => {
+                            log('✓ Test data added to IndexedDB', 'success');
+                            
+                            // データ読み取りテスト
+                            const getRequest = store.get(1);
+                            getRequest.onsuccess = (e) => {
+                                const data = e.target.result;
+                                if (data && data.content === 'Test memo content') {
+                                    log('✓ Test data retrieved from IndexedDB', 'success');
+                                } else {
+                                    log('✗ Test data retrieval failed', 'error');
+                                }
+                            };
+                        };
+                    }
+                    
+                    db.close();
+                };
+                
+                dbRequest.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('testStore')) {
+                        db.createObjectStore('testStore', { keyPath: 'id' });
+                        log('✓ IndexedDB object store created', 'success');
+                    }
+                };
+                
+            } catch (error) {
+                log(`✗ IndexedDB Test Error: ${error.message}`, 'error');
+            }
+        }
+
+        // アプリケーション固有のテスト
+        async function testApplicationSpecific() {
+            log('=== Application Specific Test ===');
+            
+            try {
+                // Blazor WebAssemblyファイルの確認
+                const blazorResponse = await fetch('http://localhost:8080/_framework/blazor.webassembly.js');
+                if (blazorResponse.ok) {
+                    log('✓ Blazor WebAssembly runtime accessible', 'success');
+                } else {
+                    log('✗ Blazor WebAssembly runtime not accessible', 'error');
+                }
+                
+                // IndexedDB Blazorライブラリの確認
+                const indexedDbResponse = await fetch('http://localhost:8080/_content/TG.Blazor.IndexedDB/indexedDb.Blazor.js');
+                if (indexedDbResponse.ok) {
+                    log('✓ IndexedDB Blazor library accessible', 'success');
+                } else {
+                    log('✗ IndexedDB Blazor library not accessible', 'error');
+                }
+                
+                // Boot configuration確認
+                const bootResponse = await fetch('http://localhost:8080/_framework/blazor.boot.json');
+                if (bootResponse.ok) {
+                    const bootConfig = await bootResponse.json();
+                    const hasIndexedDB = Object.keys(bootConfig.resources.assembly).some(key => 
+                        key.includes('TG.Blazor.IndexedDB'));
+                    
+                    if (hasIndexedDB) {
+                        log('✓ IndexedDB library included in boot configuration', 'success');
+                    } else {
+                        log('✗ IndexedDB library missing from boot configuration', 'error');
+                    }
+                } else {
+                    log('✗ Boot configuration not accessible', 'error');
+                }
+                
+            } catch (error) {
+                log(`✗ Application Test Error: ${error.message}`, 'error');
+            }
+        }
+
+        // すべてのテストを実行
+        async function runAllTests() {
+            log('Starting Production Environment Tests...');
+            await testPWAFunctionality();
+            await testIndexedDB();
+            await testApplicationSpecific();
+            log('=== Test Complete ===');
+        }
+
+        // ページロード後にテスト実行
+        window.addEventListener('load', () => {
+            setTimeout(runAllTests, 1000); // 1秒後に実行
+        });
+    </script>
+</body>
+</html>

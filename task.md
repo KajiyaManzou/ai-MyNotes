@@ -183,26 +183,26 @@
   - [x] エラー時のフォールバック動作
 
 ### PWA設定
-- [ ] PWA基本設定
-  - [ ] manifest.jsonの作成
-    - [ ] アプリ名・説明・アイコン設定
-    - [ ] 表示モード・テーマカラー設定
-    - [ ] GitHub PagesベースURL対応
-  - [ ] Service Workerの実装
-    - [ ] キャッシュ戦略の設定
-    - [ ] オフライン対応
-- [ ] PWAアイコンの作成・設定
-  - [ ] 各種サイズのアイコン準備
-  - [ ] iOS対応アイコン設定
+- [x] PWA基本設定
+  - [x] manifest.jsonの作成
+    - [x] アプリ名・説明・アイコン設定
+    - [x] 表示モード・テーマカラー設定
+    - [x] GitHub PagesベースURL対応
+  - [　] Service Workerの実装
+    - [　] キャッシュ戦略の設定
+    - [　] オフライン対応
+- [x] PWAアイコンの作成・設定
+  - [x] 各種サイズのアイコン準備
+  - [x] iOS対応アイコン設定
 
 ### GitHub Pages デプロイ設定
-- [ ] GitHub Actions CI/CD設定
-  - [ ] Blazor WebAssemblyビルド設定
-  - [ ] GitHub Pagesへのデプロイ設定
-  - [ ] 自動デプロイワークフローの作成
-- [ ] 本番環境での動作確認
-  - [ ] PWA機能の動作確認
-  - [ ] IndexedDBの動作確認
+- [x] GitHub Actions CI/CD設定
+  - [x] Blazor WebAssemblyビルド設定
+  - [x] GitHub Pagesへのデプロイ設定
+  - [x] 自動デプロイワークフローの作成
+- [x] 本番環境での動作確認
+  - [x] PWA機能の動作確認
+  - [x] IndexedDBの動作確認
 
 ### 統合テスト・検証（2画面構成対応）
 - [ ] 統合テスト作成

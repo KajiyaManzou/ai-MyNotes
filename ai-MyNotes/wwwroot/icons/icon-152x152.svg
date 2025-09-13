@@ -1,0 +1,18 @@
+<svg width="152" height="152" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景（角丸矩形） -->
+  <rect x="0" y="0" width="152" height="152" rx="19" ry="19" fill="#0d6efd"/>
+  
+  <!-- メモ用紙の背景 -->
+  <rect x="19" y="23.75" width="114" height="118.75" rx="4.75" ry="4.75" fill="#ffffff"/>
+  
+  <!-- メモの罫線 -->
+  <line x1="28.5" y1="47.5" x2="123.5" y2="47.5" stroke="#e0e0e0" stroke-width="1"/>
+  <line x1="28.5" y1="65.3125" x2="123.5" y2="65.3125" stroke="#e0e0e0" stroke-width="1"/>
+  <line x1="28.5" y1="83.125" x2="123.5" y2="83.125" stroke="#e0e0e0" stroke-width="1"/>
+  <line x1="28.5" y1="100.9375" x2="123.5" y2="100.9375" stroke="#e0e0e0" stroke-width="1"/>
+  <line x1="28.5" y1="118.75" x2="123.5" y2="118.75" stroke="#e0e0e0" stroke-width="1"/>
+  
+  <!-- ペンアイコン -->
+  <path d="M112.8125 35.625 L116.375 32.0625 L119.9375 35.625 L116.375 39.1875 Z" fill="#0d6efd"/>
+  <path d="M109.25 39.1875 L112.8125 35.625 L116.375 39.1875 L112.8125 42.75 Z" fill="#6c757d"/>
+</svg>

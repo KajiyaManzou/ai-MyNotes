@@ -33,12 +33,104 @@
       "PackagePath": "staticwebassets/icon-192.png"
     },
     {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/create-icons.py",
+      "PackagePath": "staticwebassets/icons/create-icons.py"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/create-placeholder-icons.sh",
+      "PackagePath": "staticwebassets/icons/create-placeholder-icons.sh"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/create-simple-png.py",
+      "PackagePath": "staticwebassets/icons/create-simple-png.py"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/generate-icons.html",
+      "PackagePath": "staticwebassets/icons/generate-icons.html"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/generate-icons.js",
+      "PackagePath": "staticwebassets/icons/generate-icons.js"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-128x128.png",
+      "PackagePath": "staticwebassets/icons/icon-128x128.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-128x128.svg",
+      "PackagePath": "staticwebassets/icons/icon-128x128.svg"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-144x144.png",
+      "PackagePath": "staticwebassets/icons/icon-144x144.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-144x144.svg",
+      "PackagePath": "staticwebassets/icons/icon-144x144.svg"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-152x152.png",
+      "PackagePath": "staticwebassets/icons/icon-152x152.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-152x152.svg",
+      "PackagePath": "staticwebassets/icons/icon-152x152.svg"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-192x192.png",
+      "PackagePath": "staticwebassets/icons/icon-192x192.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-192x192.svg",
+      "PackagePath": "staticwebassets/icons/icon-192x192.svg"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-384x384.png",
+      "PackagePath": "staticwebassets/icons/icon-384x384.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-384x384.svg",
+      "PackagePath": "staticwebassets/icons/icon-384x384.svg"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-512x512.png",
+      "PackagePath": "staticwebassets/icons/icon-512x512.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-512x512.svg",
+      "PackagePath": "staticwebassets/icons/icon-512x512.svg"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-72x72.png",
+      "PackagePath": "staticwebassets/icons/icon-72x72.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-72x72.svg",
+      "PackagePath": "staticwebassets/icons/icon-72x72.svg"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-96x96.png",
+      "PackagePath": "staticwebassets/icons/icon-96x96.png"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-96x96.svg",
+      "PackagePath": "staticwebassets/icons/icon-96x96.svg"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/icons/icon-base.svg",
+      "PackagePath": "staticwebassets/icons/icon-base.svg"
+    },
+    {
       "Id": "/workspace/ai-MyNotes/wwwroot/index.html",
       "PackagePath": "staticwebassets/index.html"
     },
     {
       "Id": "/workspace/ai-MyNotes/wwwroot/js/swipe-helper.js",
       "PackagePath": "staticwebassets/js/swipe-helper.js"
+    },
+    {
+      "Id": "/workspace/ai-MyNotes/wwwroot/manifest.json",
+      "PackagePath": "staticwebassets/manifest.json"
     },
     {
       "Id": "/workspace/ai-MyNotes/wwwroot/sample-data/weather.json",

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PWA Icon Generator</title>
+</head>
+<body>
+    <h1>PWA Icon Generator</h1>
+    <div id="canvas-container"></div>
+    
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        
+        function createIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // 背景色（Bootstrap primary）
+            ctx.fillStyle = '#0d6efd';
+            ctx.fillRect(0, 0, size, size);
+            
+            // 角丸効果（近似）
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            const radius = size / 8;
+            ctx.roundRect(0, 0, size, size, radius);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // メモ用紙
+            const margin = size / 8;
+            const noteWidth = size - (margin * 2);
+            const noteHeight = noteWidth * 1.2;
+            const noteX = margin;
+            const noteY = (size - noteHeight) / 2;
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.roundRect(noteX, noteY, noteWidth, noteHeight, radius / 2);
+            ctx.fill();
+            
+            // 罫線
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = Math.max(1, size / 128);
+            const lineSpacing = noteHeight / 6;
+            const lineMargin = noteWidth / 8;
+            
+            for (let i = 1; i < 5; i++) {
+                const y = noteY + (lineSpacing * i);
+                if (y < noteY + noteHeight - lineSpacing / 2) {
+                    ctx.beginPath();
+                    ctx.moveTo(noteX + lineMargin, y);
+                    ctx.lineTo(noteX + noteWidth - lineMargin, y);
+                    ctx.stroke();
+                }
+            }
+            
+            return canvas;
+        }
+        
+        // アイコンを生成してページに表示
+        sizes.forEach(size => {
+            const canvas = createIcon(size);
+            canvas.style.margin = '10px';
+            canvas.style.border = '1px solid #ccc';
+            
+            const container = document.createElement('div');
+            container.innerHTML = `<h3>${size}x${size}</h3>`;
+            container.appendChild(canvas);
+            
+            // ダウンロードリンクを作成
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL();
+            link.textContent = `Download ${size}x${size}`;
+            link.style.display = 'block';
+            container.appendChild(link);
+            
+            document.getElementById('canvas-container').appendChild(container);
+        });
+        
+        // 一括ダウンロード関数
+        function downloadAll() {
+            sizes.forEach(size => {
+                const canvas = createIcon(size);
+                const link = document.createElement('a');
+                link.download = `icon-${size}x${size}.png`;
+                link.href = canvas.toDataURL();
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+        
+        // 一括ダウンロードボタンを追加
+        const downloadButton = document.createElement('button');
+        downloadButton.textContent = 'Download All Icons';
+        downloadButton.onclick = downloadAll;
+        downloadButton.style.fontSize = '18px';
+        downloadButton.style.padding = '10px 20px';
+        downloadButton.style.marginBottom = '20px';
+        document.body.insertBefore(downloadButton, document.getElementById('canvas-container'));
+    </script>
+</body>
+</html>
