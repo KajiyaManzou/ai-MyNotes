@@ -324,7 +324,7 @@
                 
                 // 新規作成後は編集モードに移行（URL更新）
                 Id = CurrentMemo.Id;
-                Navigation.NavigateTo($"/edit/{CurrentMemo.Id}", replace: true);
+                Navigation.NavigateTo($"edit/{CurrentMemo.Id}", replace: true);
             }
 
             // 保存成功時の状態更新
@@ -420,7 +420,7 @@
             }
         }
         
-        Navigation.NavigateTo("/list");
+        Navigation.NavigateTo("list");
     }
 
     private void ClearStatus()

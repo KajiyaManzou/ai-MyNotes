@@ -366,12 +366,12 @@
 
     private void CreateNewMemo()
     {
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo("");
     }
 
     private void EditMemo(int memoId)
     {
-        Navigation.NavigateTo($"/edit/{memoId}");
+        Navigation.NavigateTo($"edit/{memoId}");
     }
 
     private async Task DeleteMemo(Memo memo, MouseEventArgs e)
