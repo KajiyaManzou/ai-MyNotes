@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ai-MyNotes",
   "resources": {
-    "hash": "sha256-9BD0gtrCy7xAOjQz7nX5lVaRO8hVNzIeVyPRryonot4=",
+    "hash": "sha256-BQqXyGb1mDbxvMUIbqQqkNhCdW55FMDzgA4F99GVb9U=",
     "jsModuleNative": {
       "dotnet.native.8.0.20.elargmqivm.js": "sha256-D0bzod5lwwSzPR43JC8TTCcZKw+3jIHOk8CZFCRj5is="
     },
@@ -17,7 +17,7 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "ai-MyNotes.wasm": "sha256-0agbFGmXt2lGZw2esXA6YbORjJ9DIv3+nbdNLJIvClY=",
+      "ai-MyNotes.wasm": "sha256-hFM7l/G+/j60RFuCnP0C7xeprdw5MhkLgghoORua6h8=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-AXZe9zTkzK+aLjrRNS936AR147bJXn81R6VBKPf8ydc=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-GcfNB0Tp2MQvZf/27xbqFcW/tIGrI6fznKo72OqKJcw=",
       "Microsoft.AspNetCore.Components.WebAssembly.wasm": "sha256-tPvydij70PmSyMABKtcxAvjtbnPGTDqzWoSoCvqhBHU=",
